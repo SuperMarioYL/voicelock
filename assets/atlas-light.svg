@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 360" width="880" height="360"
+     font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif"
+     role="img" aria-label="架构：发布历史 → 声线指纹 → 爆款体检测 → 在声线内重写 → 去AI味正文">
+  <defs>
+    <marker id="ah-l" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#B9B9C2"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="880" height="360" fill="#F5F5F7"/>
+
+  <!-- static connector baselines -->
+  <g stroke="#C9C9D0" stroke-width="1.5" fill="none">
+    <line x1="196" y1="120" x2="236" y2="120" marker-end="url(#ah-l)"/>
+    <line x1="404" y1="120" x2="444" y2="120" marker-end="url(#ah-l)"/>
+    <line x1="612" y1="120" x2="652" y2="120" marker-end="url(#ah-l)"/>
+    <!-- re-check loop: rewriter back up to detector -->
+    <path d="M528,164 C528,232 320,232 320,168" marker-end="url(#ah-l)"/>
+    <!-- rewriter down to output -->
+    <line x1="736" y1="164" x2="736" y2="256" marker-end="url(#ah-l)"/>
+  </g>
+
+  <!-- marching-dash data flow (dasharray 6 10 = period 16; from 32 → 0 = 2 periods, seamless) -->
+  <g stroke-width="1.5" fill="none" stroke-linecap="round">
+    <line x1="196" y1="120" x2="232" y2="120" stroke="#0071E3" stroke-opacity="0.55" stroke-dasharray="6 10">
+      <animate attributeName="stroke-dashoffset" from="32" to="0" dur="1.6s" repeatCount="indefinite"/>
+    </line>
+    <line x1="404" y1="120" x2="440" y2="120" stroke="#5E5CE6" stroke-opacity="0.55" stroke-dasharray="6 10">
+      <animate attributeName="stroke-dashoffset" from="32" to="0" dur="1.6s" begin="-0.4s" repeatCount="indefinite"/>
+    </line>
+    <line x1="612" y1="120" x2="648" y2="120" stroke="#5E5CE6" stroke-opacity="0.55" stroke-dasharray="6 10">
+      <animate attributeName="stroke-dashoffset" from="32" to="0" dur="1.6s" begin="-0.8s" repeatCount="indefinite"/>
+    </line>
+    <line x1="736" y1="168" x2="736" y2="252" stroke="#10A37F" stroke-opacity="0.55" stroke-dasharray="6 10">
+      <animate attributeName="stroke-dashoffset" from="32" to="0" dur="1.6s" begin="-1.2s" repeatCount="indefinite"/>
+    </line>
+  </g>
+
+  <!-- flowing packet dots -->
+  <g>
+    <circle r="3" fill="#0071E3">
+      <animateMotion path="M196,120 L232,120" dur="2.4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="2.4s" repeatCount="indefinite"/>
+    </circle>
+    <circle r="3" fill="#5E5CE6">
+      <animateMotion path="M404,120 L440,120" dur="2.4s" begin="-0.8s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="2.4s" begin="-0.8s" repeatCount="indefinite"/>
+    </circle>
+    <circle r="3" fill="#5E5CE6">
+      <animateMotion path="M612,120 L648,120" dur="2.4s" begin="-1.6s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="2.4s" begin="-1.6s" repeatCount="indefinite"/>
+    </circle>
+    <circle r="3" fill="#10A37F">
+      <animateMotion path="M736,168 L736,252" dur="2.4s" begin="-1.2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="2.4s" begin="-1.2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- nodes (breathing fill-opacity 0.10↔0.18, staggered negative begin) -->
+  <g>
+    <!-- 1. 发布历史 corpus -->
+    <rect x="26" y="80" width="170" height="80" rx="15" fill="#0071E3" fill-opacity="0.10" stroke="#0071E3" stroke-width="1.5">
+      <animate attributeName="fill-opacity" values="0.10;0.18;0.10" keyTimes="0;0.5;1" dur="3.2s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1" repeatCount="indefinite"/>
+    </rect>
+    <text x="111" y="115" text-anchor="middle" font-size="15" font-weight="600" fill="#0A4F9E">发布历史</text>
+    <text x="111" y="136" text-anchor="middle" font-size="11" fill="#6E6E73">your own 笔记 corpus</text>
+
+    <!-- 2. 声线指纹 voiceprint -->
+    <rect x="236" y="80" width="170" height="80" rx="15" fill="#5E5CE6" fill-opacity="0.10" stroke="#5E5CE6" stroke-width="1.5">
+      <animate attributeName="fill-opacity" values="0.10;0.18;0.10" keyTimes="0;0.5;1" dur="3.2s" begin="-0.8s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1" repeatCount="indefinite"/>
+    </rect>
+    <text x="321" y="115" text-anchor="middle" font-size="15" font-weight="600" fill="#4B3FC4">声线指纹</text>
+    <text x="321" y="136" text-anchor="middle" font-size="11" fill="#6E6E73">VoiceProfile (asset)</text>
+
+    <!-- 3. 爆款体检测 slop detector -->
+    <rect x="444" y="80" width="170" height="80" rx="15" fill="#5E5CE6" fill-opacity="0.10" stroke="#5E5CE6" stroke-width="1.5">
+      <animate attributeName="fill-opacity" values="0.10;0.18;0.10" keyTimes="0;0.5;1" dur="3.2s" begin="-1.4s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1" repeatCount="indefinite"/>
+    </rect>
+    <text x="529" y="115" text-anchor="middle" font-size="15" font-weight="600" fill="#4B3FC4">爆款体检测</text>
+    <text x="529" y="136" text-anchor="middle" font-size="11" fill="#6E6E73">slop score + regions</text>
+
+    <!-- 4. 在声线内重写 rewriter -->
+    <rect x="652" y="80" width="170" height="80" rx="15" fill="#10A37F" fill-opacity="0.10" stroke="#10A37F" stroke-width="1.5">
+      <animate attributeName="fill-opacity" values="0.10;0.18;0.10" keyTimes="0;0.5;1" dur="3.2s" begin="-2.0s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1" repeatCount="indefinite"/>
+    </rect>
+    <text x="737" y="115" text-anchor="middle" font-size="15" font-weight="600" fill="#0B6B53">在声线内重写</text>
+    <text x="737" y="136" text-anchor="middle" font-size="11" fill="#6E6E73">mock · llm backend</text>
+
+    <!-- 5. 去AI味正文 output -->
+    <rect x="652" y="256" width="170" height="72" rx="15" fill="#10A37F" fill-opacity="0.10" stroke="#10A37F" stroke-width="1.5">
+      <animate attributeName="fill-opacity" values="0.10;0.18;0.10" keyTimes="0;0.5;1" dur="3.2s" begin="-2.6s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1" repeatCount="indefinite"/>
+    </rect>
+    <text x="737" y="288" text-anchor="middle" font-size="15" font-weight="600" fill="#0B6B53">去AI味正文</text>
+    <text x="737" y="309" text-anchor="middle" font-size="11" fill="#6E6E73">before/after · 87→12</text>
+  </g>
+
+  <!-- loop label -->
+  <text x="320" y="250" text-anchor="middle" font-size="11" font-weight="500" fill="#6E6E73">re-check loop（重写后回检）</text>
+</svg>

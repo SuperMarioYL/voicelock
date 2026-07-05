@@ -35,3 +35,5 @@ BUILD_SETUP_NEXT_STEPS.md
 .stage_*
 CLAUDE.md
 .claude/
+.publish.log
+PUBLISH_BLOCKED.md

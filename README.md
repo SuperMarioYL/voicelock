@@ -11,7 +11,7 @@
 <p align="center"><sub>把 AI 副驾写出来的『一眼AI』爆款体正文，改写回你自己账号的声线。</sub></p>
 
 <p align="center">
-  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="Apache-2.0"></a>
   <a href="https://github.com/SuperMarioYL/voicelock/releases"><img src="https://img.shields.io/github/v/release/SuperMarioYL/voicelock" alt="release"></a>
   <a href="https://github.com/SuperMarioYL/voicelock/actions/workflows/ci.yml"><img src="https://github.com/SuperMarioYL/voicelock/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <img src="https://img.shields.io/badge/python-3.12-3776AB.svg" alt="Python 3.12">

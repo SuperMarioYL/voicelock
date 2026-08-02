@@ -139,7 +139,7 @@ voicelock rewrite draft.txt --backend llm
 
 <h2><img src="https://api.iconify.design/tabler:license.svg?color=%230071E3&width=24" height="22" align="absmiddle" alt=""> License & 贡献</h2>
 
-[MIT](./LICENSE) 开源。欢迎提 [Issue](https://github.com/SuperMarioYL/voicelock/issues) 或 PR——尤其是爆款体规则的补充、以及不同账号声线的样例。
+[Apache-2.0](./LICENSE) 开源。欢迎提 [Issue](https://github.com/SuperMarioYL/voicelock/issues) 或 PR——尤其是爆款体规则的补充、以及不同账号声线的样例。
 
 ## Share this
 
@@ -149,4 +149,4 @@ fingerprint from your own posts and rewrites AI drafts in your voice. Offline,
 no API key. https://github.com/SuperMarioYL/voicelock
 ```
 
-<p align="center"><sub><a href="./LICENSE">MIT</a> © 2026 SuperMarioYL</sub></p>
+<p align="center"><sub><a href="./LICENSE">Apache-2.0</a> © 2026 SuperMarioYL</sub></p>

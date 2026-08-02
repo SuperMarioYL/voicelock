@@ -11,7 +11,7 @@
 <p align="center"><sub>Rewrite the AI-copilot 爆款体 ("obviously-AI") body text back into your own account voice.</sub></p>
 
 <p align="center">
-  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="Apache-2.0"></a>
   <a href="https://github.com/SuperMarioYL/voicelock/releases"><img src="https://img.shields.io/github/v/release/SuperMarioYL/voicelock" alt="release"></a>
   <a href="https://github.com/SuperMarioYL/voicelock/actions/workflows/ci.yml"><img src="https://github.com/SuperMarioYL/voicelock/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <img src="https://img.shields.io/badge/python-3.12-3776AB.svg" alt="Python 3.12">
@@ -154,7 +154,7 @@ The real monetization lives in the hosted tier (the same `voiceprint`/`slop_dete
 
 <h2><img src="https://api.iconify.design/tabler:license.svg?color=%230071E3&width=24" height="22" align="absmiddle" alt=""> License & Contributing</h2>
 
-[MIT](./LICENSE). Issues and PRs welcome — especially new 爆款体 rules and sample voices from different accounts. File one at [Issues](https://github.com/SuperMarioYL/voicelock/issues).
+[Apache-2.0](./LICENSE). Issues and PRs welcome — especially new 爆款体 rules and sample voices from different accounts. File one at [Issues](https://github.com/SuperMarioYL/voicelock/issues).
 
 ## Share this
 
@@ -164,4 +164,4 @@ from your own posts and rewrites AI drafts in your voice. Offline, no API key.
 https://github.com/SuperMarioYL/voicelock
 ```
 
-<p align="center"><sub><a href="./LICENSE">MIT</a> © 2026 SuperMarioYL</sub></p>
+<p align="center"><sub><a href="./LICENSE">Apache-2.0</a> © 2026 SuperMarioYL</sub></p>

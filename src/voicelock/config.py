@@ -8,6 +8,7 @@ offline deterministic ``mock``.
 from __future__ import annotations
 
 import os
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -22,6 +23,10 @@ BACKEND_ENV = "VOICELOCK_BACKEND"
 DEFAULT_MODEL = "qwen-plus"
 DEFAULT_BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 
+# Safe account-id slug: rejects path separators, '..', null bytes, spaces, etc.
+# so `--account "../../etc/passwd"` cannot escape the app dir via voice_path.
+_ACCOUNT_ID_RE = re.compile(r"^[A-Za-z0-9_-]+$")
+
 
 def app_dir() -> Path:
     """Return the voicelock home dir (``~/.voicelock`` by default)."""
@@ -32,7 +37,18 @@ def app_dir() -> Path:
 
 
 def voice_path(account_id: str = "default") -> Path:
-    """Path of the stored VoiceProfile for an account."""
+    """Path of the stored VoiceProfile for an account.
+
+    ``account_id`` is validated against ``[A-Za-z0-9_-]+`` at this boundary so
+    a path-traversal value (``../../etc/passwd``, slashes, null bytes, ...)
+    cannot escape ``~/.voicelock`` via save/load_profile. Invalid ids raise
+    ``ValueError`` with a clear message.
+    """
+    if not _ACCOUNT_ID_RE.match(account_id):
+        raise ValueError(
+            f"invalid account_id {account_id!r}: must match [A-Za-z0-9_-]+ "
+            "(no path separators, '..', or null bytes)"
+        )
     if account_id == "default":
         return app_dir() / "voice.yaml"
     return app_dir() / f"voice.{account_id}.yaml"

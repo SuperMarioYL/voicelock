@@ -43,10 +43,23 @@ console = Console()
 # helpers
 # --------------------------------------------------------------------------- #
 def _read_source(path_or_text: str) -> str:
-    """Accept either a file path or inline text."""
+    """Accept either a file path or inline text.
+
+    A path-like input (file extension or path separator) that does not resolve
+    to an existing file raises ``FileNotFoundError`` rather than being silently
+    fingerprinted as the filename string — a typo'd ``--corpus my-posts.txt``
+    must not poison downstream audit/rewrite. Multi-line inline text is still
+    accepted as a corpus.
+    """
     p = Path(path_or_text)
-    if p.exists() and p.is_file():
+    if p.is_file():
         return p.read_text(encoding="utf-8")
+    looks_pathlike = bool(p.suffix) or "/" in path_or_text or "\\" in path_or_text
+    if looks_pathlike and "\n" not in path_or_text:
+        raise FileNotFoundError(
+            f"找不到文件: {path_or_text}"
+            "（若要直接粘贴文本，请用不含路径分隔符/扩展名的内联文本）"
+        )
     return path_or_text
 
 

@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "name": "voicelock",
+  "github": "https://github.com/SuperMarioYL/voicelock",
+  "host": "voicelock.lei6393.com",
+  "lang": { "primary": "zh", "toggle": true },
+  "accent": ["#D9A441", "#5E9B7E", "#B85C3F"],
+  "content_version": "v0.3.0",
+  "generated_at": "2026-08-06T22:37:32Z",
+  "hero": {
+    "eyebrow": {
+      "zh": "账号声线 · 你拥有的资产 · 离线零 key",
+      "en": "Account voice · Your owned asset · Offline, zero key"
+    },
+    "headline": {
+      "zh": "AI 副驾写的正文一眼就是爆款体\nvoicelock 把它逐句改回你账号的声线",
+      "en": "Your AI copilot's draft screams viral slop\nvoicelock rewrites it sentence by sentence into your voice"
+    },
+    "sub": {
+      "zh": "从你自己的往期笔记学出账号声线指纹，再逐句检测爆款体区域、在声线内重写、回检达标——退火掉『姐妹们/绝绝子/感叹号轰炸』，改回你本人的表达。",
+      "en": "It learns an account voiceprint from your own past posts, then detects slop regions sentence-by-sentence, rewrites them inside your voice, and rechecks until they pass — boiling off the 姐妹们/绝绝子/exclamation-bomb slop back into how you actually write."
+    },
+    "command": "voicelock rewrite draft.txt --account main",
+    "cta": { "zh": "查看 GitHub", "en": "View on GitHub" },
+    "ctaGithub": { "zh": "Star 项目", "en": "Star the repo" },
+    "scroll": { "zh": "看看怎么去 AI 味", "en": "See how it de-AIs" }
+  },
+  "advantages": [
+    {
+      "title": {
+        "zh": "声线指纹是你拥有的资产",
+        "en": "Your voiceprint is an asset you own"
+      },
+      "body": {
+        "zh": "不是又一次『丢给 AI 一个 prompt 让它学我说话』。voicelock 从你自己的往期笔记算出账号声线指纹，存到你本地，是你拥有的资产——跨帖跨天复用，不是一次性 prompt。",
+        "en": "Not another 'give AI a prompt to mimic me.' voicelock learns your account voiceprint from your own past posts and keeps it locally — an asset you own, reusable post after post, not a one-shot prompt."
+      },
+      "chips": ["› 从你的往期笔记学出", "› 存本地，归你所有", "› 跨帖跨天复用"]
+    },
+    {
+      "title": {
+        "zh": "一眼标出正文里的爆款体区域",
+        "en": "Flags the slop regions in your draft"
+      },
+      "body": {
+        "zh": "针对小红书同质化套路——姐妹们、绝绝子、yyds、感叹号轰炸——逐句标出 slop 区域并给分，告诉你哪几句一眼就是爆款体、要改。",
+        "en": "Built for Xiaohongshu's homogenized formulas — 姐妹们, 绝绝子, yyds, exclamation bombs — it flags the slop regions sentence-by-sentence with a score, showing you exactly which lines scream slop and need rewriting."
+      },
+      "chips": ["› 句级 slop 区域", "› 0–100 slop 分", "› before/after 对比"]
+    },
+    {
+      "title": {
+        "zh": "改回你的声线，回检达标才算完",
+        "en": "Rewritten into your voice — rechecked until it passes"
+      },
+      "body": {
+        "zh": "对每个爆款体区域跑『重写 → 回检』：在你的账号声线里重写，重写后回检不达标就再来一轮，不是一次改完就交差。",
+        "en": "Each slop region runs a rewrite → recheck loop: rewritten inside your account's voice, and if the recheck doesn't pass, it goes again — not a single-pass handoff."
+      },
+      "chips": ["› 在你的声线内重写", "› 回检不达标再来一轮", "› 逐句 before/after diff"]
+    },
+    {
+      "title": {
+        "zh": "零 key 离线，从安装到出结果",
+        "en": "Zero-key, offline — from install to result"
+      },
+      "body": {
+        "zh": "默认一个零 API key、不联网的离线后端，从安装到第一条去 AI 味正文全程离线跑通；想要更高质量，带上你自己的模型 key 即可。",
+        "en": "A zero-API-key, offline backend by default — from install to your first de-AI'd draft, the whole chain runs with no key and no network. Want higher quality? Bring your own model key."
+      },
+      "chips": ["› 零 key · 离线", "› 安装即可跑通", "› 高质量自带 key"]
+    }
+  ],
+  "scene": { "kind": "mesh" },
+  "cta": {
+    "headline": {
+      "zh": "把你的声线变成你拥有的资产",
+      "en": "Turn your voice into an asset you own"
+    },
+    "sub": {
+      "zh": "开源 · Apache-2.0 · 本地一条命令跑通。",
+      "en": "Open source · Apache-2.0 · runs locally in one command."
+    },
+    "button": { "zh": "查看 GitHub", "en": "View on GitHub" }
+  },
+  "footer": {
+    "tag": {
+      "zh": "给小红书正文做去 AI 味的账号声线改写",
+      "en": "Account-voiceprint de-AI rewriting for Xiaohongshu posts"
+    }
+  }
+}

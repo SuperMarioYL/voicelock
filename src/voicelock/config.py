@@ -80,19 +80,33 @@ def resolve_backend(prefer: str | None = None) -> BackendConfig:
     """Resolve which backend to use.
 
     Precedence:
-      1. explicit ``prefer`` argument ('mock' | 'llm')
+      1. explicit ``prefer`` argument ('mock' | 'llm') — an explicit but
+         unknown value (a typo like ``moc``, or ``foo``) raises ``ValueError``
+         rather than silently falling back, so a mis-typed ``--backend`` is a
+         loud config error, not a silent misconfiguration of the rewrite core.
       2. ``VOICELOCK_BACKEND`` env var
       3. presence of ``VOICELOCK_API_KEY`` → 'llm', else 'mock'
 
-    ``mock`` never requires a key and always works fully offline.
+    The no-arg path (``prefer`` is None/empty — i.e. ``--backend`` omitted)
+    stays on the env→key resolution so the default-offline behavior is
+    unchanged. ``mock`` never requires a key and always works fully offline.
     """
     api_key = os.environ.get(API_KEY_ENV) or None
     base_url = os.environ.get(BASE_URL_ENV) or DEFAULT_BASE_URL
     model = os.environ.get(MODEL_ENV) or DEFAULT_MODEL
 
-    kind = (prefer or os.environ.get(BACKEND_ENV) or "").strip().lower()
-    if kind not in {"mock", "llm"}:
-        kind = "llm" if api_key else "mock"
+    if prefer is not None and prefer.strip() != "":
+        # an explicitly-passed --backend must name a known backend; a typo or
+        # unsupported value is a hard error, not a silent fallback to mock/llm.
+        kind = prefer.strip().lower()
+        if kind not in {"mock", "llm"}:
+            raise ValueError(
+                f"unknown backend {prefer!r}: must be one of 'mock' or 'llm'"
+            )
+    else:
+        kind = (os.environ.get(BACKEND_ENV) or "").strip().lower()
+        if kind not in {"mock", "llm"}:
+            kind = "llm" if api_key else "mock"
 
     if kind == "llm" and not api_key:
         # asked for llm but no key — fall back to offline mock rather than crash

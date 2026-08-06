@@ -9,6 +9,7 @@ Subcommands:
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Optional
 
@@ -38,6 +39,14 @@ app = typer.Typer(
 )
 console = Console()
 
+# A real 小红书 draft is zh-CN, so a CJK character anywhere in a path-like
+# input means the user pasted inline text (e.g. a date "2026/07/06 总结" or a
+# gender slash "他/她 都可以"), not a typo'd ASCII file path. Only path-like
+# inputs with NO CJK are treated as missing-file typos; this stops the
+# FileNotFoundError guard from over-rejecting single-line CJK inline drafts that
+# happen to contain a slash or a dot-suffix.
+_CJK = re.compile(r"[\u4e00-\u9fff]")
+
 
 # --------------------------------------------------------------------------- #
 # helpers
@@ -49,13 +58,19 @@ def _read_source(path_or_text: str) -> str:
     to an existing file raises ``FileNotFoundError`` rather than being silently
     fingerprinted as the filename string — a typo'd ``--corpus my-posts.txt``
     must not poison downstream audit/rewrite. Multi-line inline text is still
-    accepted as a corpus.
+    accepted as a corpus, and single-line CJK inline text that merely contains
+    a slash or dot-suffix (a date, "他/她", "一句话.好的") is treated as
+    inline content, not a missing file.
     """
     p = Path(path_or_text)
     if p.is_file():
         return p.read_text(encoding="utf-8")
     looks_pathlike = bool(p.suffix) or "/" in path_or_text or "\\" in path_or_text
-    if looks_pathlike and "\n" not in path_or_text:
+    if (
+        looks_pathlike
+        and "\n" not in path_or_text
+        and not _CJK.search(path_or_text)
+    ):
         raise FileNotFoundError(
             f"找不到文件: {path_or_text}"
             "（若要直接粘贴文本，请用不含路径分隔符/扩展名的内联文本）"

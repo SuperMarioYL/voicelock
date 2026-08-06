@@ -192,11 +192,22 @@ def voice_distance(profile: VoiceProfile, text: str) -> float:
     0.0 = indistinguishable from the account's own voice; 1.0 = maximally off.
     Built by fingerprinting the draft with the same statistics and comparing
     signature vectors (Euclidean, normalized by vector length).
+
+    An empty/whitespace-only draft (or one whose signature is all zeros — no
+    scorable content) is maximally off-voice: distance 1.0 (consistency 0.0).
+    Without this guard an empty draft still yields ``signature_vec=[0.0]*8``
+    (8 elements, all zero), so the truthy-list check below does not fire and
+    the distance would compute to ~0.32 (consistency ~0.67) — a meaningless
+    positive score for an empty rewrite that poisons audit/rewrite/voice-distance.
     """
     draft = build_profile(text, account_id=profile.account_id)
     a = profile.signature_vec
     b = draft.signature_vec
     if not a or not b:
+        return 1.0
+    # a degenerate draft (empty/whitespace text, or an all-zero signature_vec
+    # from a draft with no scorable content) reads as maximally off-voice.
+    if not text.strip() or all(v == 0.0 for v in b):
         return 1.0
     n = min(len(a), len(b))
     ss = sum((a[i] - b[i]) ** 2 for i in range(n))

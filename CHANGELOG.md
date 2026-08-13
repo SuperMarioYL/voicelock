@@ -4,6 +4,34 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-08-14
+
+Bugfix release — two correctness fixes folded in from the v0.4.0 amendment,
+both de-risking the core 去AI味 rewrite UX for a re-launch.
+
+### Fixed
+- `rewrite` now preserves the original paragraph structure of a draft in its
+  `after` output. Previously `_reassemble` rebuilt the after-text by joining
+  `split_sentences(text)` with `""`, and `split_sentences` strips each sentence
+  and filters empties — so every `\n` / `\n\n` paragraph separator and
+  inter-sentence whitespace was discarded, even for a clean draft with zero
+  slop regions (a 3-paragraph clean draft returned `slop_before==
+  slop_after==0.0`, `per_region==[]`, yet `before != after` because the
+  blank-line paragraph breaks were gone). The shipped 改写后正文 Panel and the
+  before/after diff therefore mangled a 小红书 creator's paragraph structure
+  for any multi-paragraph draft — the common 正文 case. `_reassemble` now
+  locates each (stripped) sentence's span in the original text and rebuilds by
+  copying the original gap text between sentence spans verbatim, substituting
+  only the rewritten sentences by index; the no-rewrite path is byte-identical
+  to the original text (`after == before` for a clean draft).
+- The CLI commands now catch the `FileNotFoundError` / `ValueError` raised by
+  the v0.2/v0.3 fixes and print a clean red message with exit code 1, instead
+  of letting them propagate as a raw Rich-rendered Python traceback. The #1
+  CLI mistake — `voicelock fingerprint --corpus my-post.txt` with a typo'd
+  path — plus bad `--account` (path-traversal-style value) and unknown
+  `--backend` values now surface as a clean error, not an unhandled traceback,
+  for the non-dev creator audience.
+
 ## [0.3.0] - 2026-08-07
 
 Bugfix release — three correctness fixes folded in from the v0.3.0 amendment.
@@ -63,6 +91,7 @@ First public release — offline-first CLI, no API key required.
 - Bilingual README (zh-primary + English sibling), animated hero/atlas SVGs,
   and a rendered demo GIF.
 
+[0.4.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.4.0
 [0.3.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.3.0
 [0.2.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.2.0
 [0.1.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.1.0

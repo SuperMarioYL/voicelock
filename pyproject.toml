@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "voicelock"
-version = "0.3.0"
+version = "0.4.0"
 description = "去AI味 for 小红书 正文 — learn your account-voice fingerprint, flag 爆款体 slop regions, and rewrite AI drafts in your own voice."
 readme = "README.md"
 requires-python = ">=3.12"

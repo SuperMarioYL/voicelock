@@ -9,6 +9,7 @@ Subcommands:
 
 from __future__ import annotations
 
+import functools
 import re
 from pathlib import Path
 from typing import Optional
@@ -96,10 +97,37 @@ def _slop_color(score: float) -> str:
     return "green"
 
 
+def _clean_user_errors(fn):
+    """Wrap a CLI command so user-error exceptions surface as clean messages.
+
+    The v0.2/v0.3 fixes raise to signal a user mistake rather than failing
+    silently: ``_read_source`` raises ``FileNotFoundError`` for a typo'd/missing
+    ``--corpus``/draft path, ``voice_path`` raises ``ValueError`` for an unsafe
+    ``--account`` (reached both via ``_load_profile_or_none`` and the
+    ``fingerprint`` save call), and ``resolve_backend`` raises ``ValueError``
+    for an unknown ``--backend``. Left uncaught those surface as a raw
+    Rich-rendered Python traceback — an unhandled error path for the non-dev
+    creator audience. Catch ``FileNotFoundError`` / ``ValueError`` here at the
+    command boundary, print the message in red, and exit 1 instead of letting
+    the exception propagate. At src/voicelock/cli.py:110.
+    """
+
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        try:
+            return fn(*args, **kwargs)
+        except (FileNotFoundError, ValueError) as exc:
+            console.print(f"[red]错误：{exc}[/red]")
+            raise typer.Exit(code=1) from exc
+
+    return wrapper
+
+
 # --------------------------------------------------------------------------- #
 # commands
 # --------------------------------------------------------------------------- #
 @app.command()
+@_clean_user_errors
 def fingerprint(
     corpus: str = typer.Option(
         ..., "--corpus", "-c", help="你的历史笔记正文（文件路径或直接粘贴文本，多篇用空行分隔）"
@@ -136,6 +164,7 @@ def fingerprint(
 
 
 @app.command(name="voice-distance")
+@_clean_user_errors
 def voice_distance_cmd(
     draft: str = typer.Argument(..., help="草稿文本（文件路径或直接粘贴）"),
     account: str = typer.Option("default", "--account", "-a", help="账号标识"),
@@ -161,6 +190,7 @@ def voice_distance_cmd(
 
 
 @app.command()
+@_clean_user_errors
 def audit(
     draft: str = typer.Argument(..., help="AI 副驾生成的草稿（文件路径或直接粘贴）"),
     account: str = typer.Option("default", "--account", "-a", help="账号标识（可选）"),
@@ -198,6 +228,7 @@ def audit(
 
 
 @app.command()
+@_clean_user_errors
 def rewrite(
     draft: str = typer.Argument(..., help="AI 副驾生成的草稿（文件路径或直接粘贴）"),
     account: str = typer.Option("default", "--account", "-a", help="账号标识（可选）"),

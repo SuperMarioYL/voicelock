@@ -77,7 +77,7 @@ def rewrite(
             }
         )
 
-    after = _reassemble(sentences, rewritten)
+    after = _reassemble(text, sentences, rewritten)
 
     audit_after = detect(after, profile)
     slop_after = audit_after.slop_score
@@ -95,10 +95,43 @@ def rewrite(
     )
 
 
-def _reassemble(sentences: list[str], rewritten: dict[int, str]) -> str:
-    """Rebuild the draft, swapping in rewritten sentences by index."""
+def _reassemble(
+    text: str, sentences: list[str], rewritten: dict[int, str]
+) -> str:
+    """Rebuild the draft, swapping in rewritten sentences by index.
+
+    The original *gap* text between sentence spans (newlines, blank-line
+    ``\\n\\n`` paragraph separators, inter-sentence whitespace) is copied
+    verbatim from ``text`` so a multi-paragraph draft keeps its paragraph
+    structure in the output — only sentences whose index appears in
+    ``rewritten`` are substituted. ``split_sentences`` strips each sentence
+    and filters empties, so the gap text is exactly what that stripping would
+    otherwise discard; preserving it here is what keeps ``after`` faithful to
+    the creator's paragraph layout.
+
+    With no rewrites (``rewritten`` empty — a clean draft with zero slop
+    regions, or every region kept its original) the output is the original
+    text verbatim, so ``after`` is byte-identical to ``before``.
+    """
+    # No-rewrite path: nothing was substituted, so return the original text
+    # verbatim (paragraph breaks and all) — byte-identical to `before`.
+    if not rewritten:
+        return text.strip()
+
     out: list[str] = []
+    cursor = 0
     for i, s in enumerate(sentences):
-        out.append(rewritten.get(i, s))
-    # sentences already carry their own terminators from split; join tightly
+        # locate this (stripped) sentence's span in the original text, scanning
+        # forward from the previous sentence's end so the spans stay in order.
+        # split_sentences only strips whitespace, so each `s` is a contiguous
+        # substring of `text` and find() always locates it.
+        start = text.find(s, cursor)
+        if start == -1:  # pragma: no cover - defensive, cannot happen
+            out.append(rewritten.get(i, s))
+            continue
+        end = start + len(s)
+        out.append(text[cursor:start])  # verbatim gap before this sentence
+        out.append(rewritten.get(i, s))  # rewritten sentence, or original
+        cursor = end
+    out.append(text[cursor:])  # verbatim trailing gap
     return "".join(out).strip()

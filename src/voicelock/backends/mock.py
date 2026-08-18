@@ -15,6 +15,7 @@ import re
 
 from ..config import BackendConfig
 from ..models import VoiceProfile
+from ..voiceprint import _EMOJI_CLUSTER
 
 # openers to drop entirely (group-address / hook templates)
 _DROP_OPENERS = [
@@ -43,10 +44,6 @@ _PHRASE_SUBS: list[tuple[str, str]] = [
     (r"谁懂[啊呀]?", "说真的"),
     (r"啊啊啊+", ""),
 ]
-
-_EMOJI = re.compile(
-    "[\U0001F000-\U0001FAFF\U00002600-\U000027BF\U0001F1E6-\U0001F1FF←-⇿✀-➿]"
-)
 
 
 class MockBackend:
@@ -93,7 +90,7 @@ class MockBackend:
         out = re.sub(r"[，,、]\s*$", "。", out)
 
         # if nothing but shell remained, the region is pure slop → drop it
-        residual = _EMOJI.sub("", out)
+        residual = _EMOJI_CLUSTER.sub("", out)
         residual = re.sub(r"[。！？!?…～~，,、\s]", "", residual)
         if not residual:
             return ""
@@ -105,7 +102,15 @@ class MockBackend:
 
     # -- helpers ----------------------------------------------------------- #
     def _thin_emoji(self, text: str, profile: VoiceProfile | None) -> str:
-        """Reduce emoji to roughly the account cadence (default: at most one)."""
+        """Reduce emoji to roughly the account cadence (default: at most one cluster).
+
+        A ZWJ-joined sequence (👨‍👩‍👧‍👦) is one logical emoji, so a whole cluster is
+        kept or dropped as a single unit — iterating per codepoint would keep
+        only the first pictograph plus the dangling U+200D joiners and drop the
+        other members, leaving orphaned ZWJ control chars mangled into the
+        rewritten 正文 (e.g. ``👨\\u200d\\u200d\\u200d``). Gap text between
+        clusters is preserved verbatim.
+        """
         target = 1
         if profile is not None:
             chars = max(1, len(re.sub(r"\s+", "", text)))
@@ -113,13 +118,13 @@ class MockBackend:
             target = max(0, min(2, allowed))
 
         kept = 0
-        result_chars: list[str] = []
-        for ch in text:
-            if _EMOJI.match(ch):
-                if kept < target:
-                    result_chars.append(ch)
-                    kept += 1
-                # else drop
-            else:
-                result_chars.append(ch)
-        return "".join(result_chars)
+        out: list[str] = []
+        last = 0
+        for m in _EMOJI_CLUSTER.finditer(text):
+            out.append(text[last:m.start()])  # preserve gap text between clusters
+            if kept < target:
+                out.append(m.group())
+                kept += 1
+            last = m.end()
+        out.append(text[last:])
+        return "".join(out)

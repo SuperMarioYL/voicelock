@@ -32,6 +32,17 @@ CALM_CORPUS = """\
 根系已经绕满了旧盆，换完浇透水，叶子第二天就精神了。
 """
 
+# An *adequate* corpus (≥2 posts, ≥200 non-whitespace chars) so the v0.5.0
+# corpus-adequacy guard does not fire before the path-under-test (voice_path's
+# ValueError for a bad --account) is reached.
+ADEQUATE_CORPUS = (
+    "今天去了家门口新开的咖啡馆，坐了一下午。豆子是耶加雪菲，酸度很干净，配他家的核桃可颂刚好。"
+    "店里人不多，适合带本书慢慢待着，下午的光线透过玻璃落在木桌上，翻几页书再喝一口，确实舒服。"
+    "老板说他每周只烘一锅，卖完就关门，这种节奏在城里很少见。\n\n"
+    "周末把阳台的绿萝换了个大一点的盆。根系已经绕满了旧盆，换完浇透水，叶子第二天就精神了。"
+    "养植物这件事，急不得，慢慢来反而长得好，根扎稳了叶子自然就绿，浇水也不用太勤快。"
+)
+
 
 @pytest.fixture
 def profile():
@@ -126,7 +137,7 @@ def test_fingerprint_bad_account_exits_clean_not_traceback():
         app,
         [
             "fingerprint",
-            "--corpus", "今天写了一点正文。",
+            "--corpus", ADEQUATE_CORPUS,
             "--account", "../../etc/passwd",
         ],
     )

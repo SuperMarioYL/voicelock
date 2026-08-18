@@ -84,7 +84,10 @@ def resolve_backend(prefer: str | None = None) -> BackendConfig:
          unknown value (a typo like ``moc``, or ``foo``) raises ``ValueError``
          rather than silently falling back, so a mis-typed ``--backend`` is a
          loud config error, not a silent misconfiguration of the rewrite core.
-      2. ``VOICELOCK_BACKEND`` env var
+      2. ``VOICELOCK_BACKEND`` env var — an invalid non-empty value (a typo
+         like ``moc``) raises ``ValueError`` mirroring the explicit-arg path;
+         an empty/unset value falls through to the key-based default so the
+         default-offline behavior is unchanged.
       3. presence of ``VOICELOCK_API_KEY`` → 'llm', else 'mock'
 
     The no-arg path (``prefer`` is None/empty — i.e. ``--backend`` omitted)
@@ -105,7 +108,17 @@ def resolve_backend(prefer: str | None = None) -> BackendConfig:
             )
     else:
         kind = (os.environ.get(BACKEND_ENV) or "").strip().lower()
-        if kind not in {"mock", "llm"}:
+        # VOICELOCK_BACKEND is a documented "force a backend" env var, so a
+        # non-empty but invalid value (a typo like `moc`, or `qwen`) must be a
+        # loud error — mirroring the explicit --backend path — NOT a silent
+        # flip to the opposite backend when a key happens to be set. An
+        # empty/unset value still falls through to the key-based default so the
+        # default-offline behavior is unchanged.
+        if kind and kind not in {"mock", "llm"}:
+            raise ValueError(
+                f"unknown VOICELOCK_BACKEND {kind!r}: must be one of 'mock' or 'llm'"
+            )
+        if not kind:
             kind = "llm" if api_key else "mock"
 
     if kind == "llm" and not api_key:

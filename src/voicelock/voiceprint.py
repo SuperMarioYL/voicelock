@@ -29,9 +29,26 @@ jieba.setLogLevel(60)
 # Split after a run of terminators (so "！！！" stays attached to its sentence
 # instead of fragmenting into empty pieces).
 _SENT_SPLIT = re.compile(r"(?<=[。！？!?…])(?=[^。！？!?…])|\n+")
-# Emoji + the common 小红书 pictographic/symbol ranges.
-_EMOJI = re.compile(
-    "[\U0001F000-\U0001FAFF\U00002600-\U000027BF\U0001F1E6-\U0001F1FF←-⇿✀-➿]"
+# Base emoji + the common 小红书 pictographic/symbol ranges. Used as the
+# building block of _EMOJI_CLUSTER below; exported so backends/mock.py shares
+# the same definition (no duplicated pattern that can drift out of sync).
+_EMOJI_BASE = (
+    "[\U0001F000-\U0001FAFF\U00002600-\U000027BF"
+    "\U0001F1E6-\U0001F1FF←-⇿✀-➿]"
+)
+# An emoji *cluster*: one base pictograph, an optional U+1F3FB-1F3FF skin-tone
+# modifier, zero or more U+200D (ZWJ)-joined members (each a base + optional
+# skin tone), and an optional trailing U+FE0F variation selector. A ZWJ
+# sequence like 👨‍👩‍👧‍👦 (man+ZWJ+woman+ZWJ+girl+ZWJ+boy) is therefore ONE
+# cluster, not four — so counting (count_emoji) and thinning
+# (backends/mock._thin_emoji) treat the whole logical emoji as a single unit
+# and never leave orphaned U+200D control chars mangled into the rewritten
+# 正文.
+_EMOJI_CLUSTER = re.compile(
+    _EMOJI_BASE
+    + r"[\U0001F3FB-\U0001F3FF]?"                                   # optional skin tone
+    + r"(?:\u200D" + _EMOJI_BASE + r"[\U0001F3FB-\U0001F3FF]?)*"    # ZWJ-joined members
+    + r"\uFE0F?"                                                    # optional variation selector
 )
 _CN_TOKEN = re.compile(r"[一-鿿A-Za-z0-9]+")
 
@@ -53,7 +70,8 @@ def tokenize(text: str) -> list[str]:
 
 
 def count_emoji(text: str) -> int:
-    return len(_EMOJI.findall(text))
+    """Count emoji *clusters* (a ZWJ-joined run like 👨‍👩‍👧‍👦 counts as 1)."""
+    return len(_EMOJI_CLUSTER.findall(text))
 
 
 def _dist(values: list[float]) -> Dist:

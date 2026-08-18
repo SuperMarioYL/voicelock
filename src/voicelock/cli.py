@@ -48,6 +48,15 @@ console = Console()
 # happen to contain a slash or a dot-suffix.
 _CJK = re.compile(r"[\u4e00-\u9fff]")
 
+# Corpus-adequacy floor for fingerprinting: a voice profile built from a
+# too-small corpus (one short post, or a single character) yields a
+# statistically meaningless signature_vec, so voice_distance then returns noisy
+# scores (verified: a one-char "好" corpus scored a 爆款体 draft ~0.99). A
+# creator who under-feeds the fingerprint gets a loud refusal here instead of
+# silently-deployed noise into audit/rewrite.
+_MIN_FINGERPRINT_POSTS = 2
+_MIN_FINGERPRINT_CHARS = 200
+
 
 # --------------------------------------------------------------------------- #
 # helpers
@@ -141,6 +150,16 @@ def fingerprint(
         raise typer.Exit(code=1)
 
     profile = build_profile(text, account_id=account)
+    # corpus-adequacy guard: a too-small corpus produces a meaningless
+    # signature_vec that silently poisons downstream audit/rewrite with noise;
+    # refuse here so an under-fed fingerprint is a loud error, not a silent
+    # near-1.0 consistency score.
+    if profile.n_posts < _MIN_FINGERPRINT_POSTS or profile.n_chars < _MIN_FINGERPRINT_CHARS:
+        console.print(
+            f"[red]语料太少，声线指纹不可靠（建议至少 {_MIN_FINGERPRINT_POSTS} 篇 / "
+            f"{_MIN_FINGERPRINT_CHARS} 字）。请多粘贴几篇你的历史笔记正文。[/red]"
+        )
+        raise typer.Exit(code=1)
     path = save_profile(profile, voice_path(account))
 
     table = Table(title=f"账号声线指纹 · {account}", show_header=True, header_style="bold cyan")

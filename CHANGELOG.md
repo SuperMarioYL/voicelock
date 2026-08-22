@@ -4,6 +4,48 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-08-22
+
+Bugfix release — three correctness fixes folded in from the v0.6.0 amendment,
+all de-risking the core 去AI味 rewrite UX.
+
+### Fixed
+- `count_emoji` now counts a regional-indicator flag emoji (e.g. 🇨🇳) as one
+  cluster, not two. A flag is two regional-indicator codepoints (U+1F1E8 then
+  U+1F1F3) with no ZWJ joiner, and each indicator sat in `_EMOJI_BASE` (via the
+  `\U0001F1E6-\U0001F1FF` range), so the `_EMOJI_CLUSTER` pattern matched each
+  indicator as a separate base: `count_emoji` on one flag returned 2. This (a)
+  inflated `emoji_per_100_chars` (one flag in a short corpus scored ~11.76
+  instead of ~5.88), (b) made the slop detector false-flag a single flag as
+  emoji-stacking ×2 (pushing a 姐妹们+flag+闭眼入 sentence's slop score to
+  100), and (c) in `mock._thin_emoji` with `target=1` kept only the first
+  indicator and dropped the second, so `rewrite` on a flag-bearing slop shell
+  returned a lone first regional indicator plus `可以放心买。` — a broken
+  lone-indicator render in the rewritten 正文, the same mangle class the
+  v0.5.0 ZWJ fix addressed but for flags. A regional-indicator-pair
+  alternative is now tried before the single-base path (the shared pattern is
+  imported by `backends/mock.py`, so counting and thinning get the fix in one
+  place).
+- `resolve_backend` now raises `ValueError` when the `llm` backend is
+  requested explicitly (`--backend llm` or `VOICELOCK_BACKEND=llm`) with no
+  `VOICELOCK_API_KEY` configured, instead of silently flipping to `mock`. The
+  fallback only fired for explicit requests (the auto-select path never
+  reaches it), so a user who explicitly asks for LLM rewrites silently got
+  mock-quality output with only a dim `backend=mock` line as a hint — the same
+  silent-misconfiguration-of-the-core-rewrite-backend class the v0.3.0/v0.5.0
+  fixes made loud for unknown values. The no-arg/no-env auto-select path
+  (`kind = llm-if-key-else-mock`) is untouched, so default-offline behavior is
+  unchanged; the CLI surfaces the raise as a clean red message + exit 1.
+- The CLI commands now catch the whole `OSError` family from `_read_source`'s
+  `read_text()` (not just `FileNotFoundError`), so an existing-but-unreadable
+  file (0000 perms → `PermissionError`) exits 1 with a clean red message
+  instead of a raw Python traceback. `Path.is_file()` checks file *type*, not
+  readability, so an unreadable file passed the check and `read_text` failed;
+  the `_clean_user_errors` catch is broadened from
+  `(FileNotFoundError, ValueError)` to `(OSError, ValueError)`, completing the
+  v0.4.0 clean-error path for the entire `OSError` family
+  (`FileNotFoundError`, `PermissionError`, `IsADirectoryError`).
+
 ## [0.4.0] - 2026-08-14
 
 Bugfix release — two correctness fixes folded in from the v0.4.0 amendment,
@@ -91,6 +133,7 @@ First public release — offline-first CLI, no API key required.
 - Bilingual README (zh-primary + English sibling), animated hero/atlas SVGs,
   and a rendered demo GIF.
 
+[0.6.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.6.0
 [0.4.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.4.0
 [0.3.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.3.0
 [0.2.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.2.0

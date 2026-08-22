@@ -44,8 +44,20 @@ _EMOJI_BASE = (
 # (backends/mock._thin_emoji) treat the whole logical emoji as a single unit
 # and never leave orphaned U+200D control chars mangled into the rewritten
 # 正文.
+#
+# A regional-indicator flag (e.g. 🇨🇳) is TWO RI codepoints (U+1F1E8 then
+# U+1F1F3) with NO ZWJ joiner, and each RI sits in _EMOJI_BASE (via the
+# \U0001F1E6-\U0001F1FF range), so the single-base path above would match each
+# RI separately: count_emoji on one flag returned 2, and _thin_emoji with
+# target=1 kept only the first RI and dropped the second — a broken lone-RI
+# render in the rewritten 正文. The flag-pair alternative is therefore tried
+# FIRST (before the single-base path) so a two-RI flag is one match for both
+# counting and thinning; the shared pattern is imported by backends/mock.py,
+# so both paths get the fix in one place.
 _EMOJI_CLUSTER = re.compile(
-    _EMOJI_BASE
+    r"(?:[\U0001F1E6-\U0001F1FF]{2})"                              # a regional-indicator flag pair is ONE cluster
+    + r"|"
+    + _EMOJI_BASE
     + r"[\U0001F3FB-\U0001F3FF]?"                                   # optional skin tone
     + r"(?:\u200D" + _EMOJI_BASE + r"[\U0001F3FB-\U0001F3FF]?)*"    # ZWJ-joined members
     + r"\uFE0F?"                                                    # optional variation selector
@@ -70,7 +82,8 @@ def tokenize(text: str) -> list[str]:
 
 
 def count_emoji(text: str) -> int:
-    """Count emoji *clusters* (a ZWJ-joined run like 👨‍👩‍👧‍👦 counts as 1)."""
+    """Count emoji *clusters* (a ZWJ-joined run like 👨‍👩‍👧‍👦 and a
+    regional-indicator flag pair like 🇨🇳 each count as 1)."""
     return len(_EMOJI_CLUSTER.findall(text))
 
 

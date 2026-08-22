@@ -114,18 +114,28 @@ def _clean_user_errors(fn):
     ``--corpus``/draft path, ``voice_path`` raises ``ValueError`` for an unsafe
     ``--account`` (reached both via ``_load_profile_or_none`` and the
     ``fingerprint`` save call), and ``resolve_backend`` raises ``ValueError``
-    for an unknown ``--backend``. Left uncaught those surface as a raw
-    Rich-rendered Python traceback — an unhandled error path for the non-dev
-    creator audience. Catch ``FileNotFoundError`` / ``ValueError`` here at the
-    command boundary, print the message in red, and exit 1 instead of letting
-    the exception propagate. At src/voicelock/cli.py:110.
+    for an unknown ``--backend`` or an explicit ``llm`` with no API key. Left
+    uncaught those surface as a raw Rich-rendered Python traceback — an
+    unhandled error path for the non-dev creator audience. Catch ``OSError``
+    / ``ValueError`` here at the command boundary, print the message in red,
+    and exit 1 instead of letting the exception propagate.
+
+    ``OSError`` is the common base of ``FileNotFoundError``,
+    ``PermissionError``, and ``IsADirectoryError``; ``_read_source`` calls
+    ``p.read_text()`` after an ``is_file()`` check (which tests file *type*,
+    not readability), so an existing-but-unreadable file surfaces as a
+    ``PermissionError``. Broadening the catch from
+    ``(FileNotFoundError, ValueError)`` to ``(OSError, ValueError)`` completes
+    the v0.4.0 clean-error path for the whole ``OSError`` family, so any
+    file-read user error prints a clean red message + exit 1 instead of a
+    traceback. No other behavior changes. At src/voicelock/cli.py:110.
     """
 
     @functools.wraps(fn)
     def wrapper(*args, **kwargs):
         try:
             return fn(*args, **kwargs)
-        except (FileNotFoundError, ValueError) as exc:
+        except (OSError, ValueError) as exc:
             console.print(f"[red]错误：{exc}[/red]")
             raise typer.Exit(code=1) from exc
 

@@ -84,10 +84,15 @@ def resolve_backend(prefer: str | None = None) -> BackendConfig:
          unknown value (a typo like ``moc``, or ``foo``) raises ``ValueError``
          rather than silently falling back, so a mis-typed ``--backend`` is a
          loud config error, not a silent misconfiguration of the rewrite core.
+         An explicit ``llm`` with no ``VOICELOCK_API_KEY`` configured likewise
+         raises ``ValueError`` rather than silently flipping to mock — a valid
+         backend must not silently become its opposite. The no-arg/no-env
+         auto-select path below is untouched, so default-offline stays mock.
       2. ``VOICELOCK_BACKEND`` env var — an invalid non-empty value (a typo
          like ``moc``) raises ``ValueError`` mirroring the explicit-arg path;
-         an empty/unset value falls through to the key-based default so the
-         default-offline behavior is unchanged.
+         a non-empty ``llm`` with no key raises the same way; an empty/unset
+         value falls through to the key-based default so the default-offline
+         behavior is unchanged.
       3. presence of ``VOICELOCK_API_KEY`` → 'llm', else 'mock'
 
     The no-arg path (``prefer`` is None/empty — i.e. ``--backend`` omitted)
@@ -98,6 +103,12 @@ def resolve_backend(prefer: str | None = None) -> BackendConfig:
     base_url = os.environ.get(BASE_URL_ENV) or DEFAULT_BASE_URL
     model = os.environ.get(MODEL_ENV) or DEFAULT_MODEL
 
+    # True when the backend was named explicitly (a non-empty --backend or a
+    # non-empty VOICELOCK_BACKEND). The auto-select path (no prefer, empty/unset
+    # env) never sets this, so the llm-no-key raise below cannot fire there and
+    # default-offline behavior is unchanged.
+    explicit = False
+
     if prefer is not None and prefer.strip() != "":
         # an explicitly-passed --backend must name a known backend; a typo or
         # unsupported value is a hard error, not a silent fallback to mock/llm.
@@ -106,6 +117,7 @@ def resolve_backend(prefer: str | None = None) -> BackendConfig:
             raise ValueError(
                 f"unknown backend {prefer!r}: must be one of 'mock' or 'llm'"
             )
+        explicit = True
     else:
         kind = (os.environ.get(BACKEND_ENV) or "").strip().lower()
         # VOICELOCK_BACKEND is a documented "force a backend" env var, so a
@@ -120,9 +132,23 @@ def resolve_backend(prefer: str | None = None) -> BackendConfig:
             )
         if not kind:
             kind = "llm" if api_key else "mock"
+        else:
+            explicit = True
 
     if kind == "llm" and not api_key:
-        # asked for llm but no key — fall back to offline mock rather than crash
+        # An EXPLICIT request for the llm backend with no key is the same
+        # silent-misconfiguration-of-the-core-rewrite-backend class the
+        # v0.3.0/v0.5.0 fixes made loud for unknown values — a valid backend
+        # must not silently flip to its opposite, so a user who explicitly
+        # asks for LLM rewrites does not silently get mock-quality output.
+        # Raise (caught by cli._clean_user_errors → clean red message + exit 1)
+        # naming the missing key. The auto-select path (kind = llm-if-key-else-
+        # mock) sets mock directly when no key is present and never reaches
+        # here, so default-offline behavior is unchanged.
+        if explicit:
+            raise ValueError(
+                f"backend 'llm' requested but {API_KEY_ENV} is not set"
+            )
         kind = "mock"
 
     return BackendConfig(kind=kind, api_key=api_key, base_url=base_url, model=model)

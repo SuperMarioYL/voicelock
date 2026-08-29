@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "content_version": "v0.3.0",
-  "generated_at": "2026-08-06T22:37:32Z",
+  "content_version": "v0.7.0",
+  "generated_at": "2026-08-29T12:45:00Z",
   "name": "voicelock",
   "github": "https://github.com/SuperMarioYL/voicelock",
   "host": "voicelock.lei6393.com",
@@ -54,7 +54,7 @@
       "chips": [
         "› 从你的往期笔记学出",
         "› 存本地，归你所有",
-        "› 跨帖跨天复用"
+        "› 逐维度看差在哪"
       ]
     },
     {

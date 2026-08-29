@@ -30,6 +30,7 @@ from .voiceprint import (
     load_profile,
     save_profile,
     voice_consistency,
+    voice_distance_breakdown,
 )
 
 app = typer.Typer(
@@ -76,15 +77,18 @@ def _read_source(path_or_text: str) -> str:
     if p.is_file():
         return p.read_text(encoding="utf-8")
     looks_pathlike = bool(p.suffix) or "/" in path_or_text or "\\" in path_or_text
-    if (
-        looks_pathlike
-        and "\n" not in path_or_text
-        and not _CJK.search(path_or_text)
-    ):
-        raise FileNotFoundError(
-            f"找不到文件: {path_or_text}"
-            "（若要直接粘贴文本，请用不含路径分隔符/扩展名的内联文本）"
-        )
+    if looks_pathlike and "\n" not in path_or_text:
+        # A real (ASCII) file extension means this is a file path, even if the
+        # name contains CJK (e.g. "我的笔记.txt"); a missing such file is a
+        # typo, not inline text. CJK inline text with a CJK "extension" like
+        # "一句话.好的" has a non-ASCII suffix and is still accepted, as is
+        # slash-bearing CJK inline text ("他/她 都可以") with no ASCII suffix.
+        _ascii_ext = bool(re.match(r"^\.[A-Za-z0-9]+$", p.suffix)) if p.suffix else False
+        if not _CJK.search(path_or_text) or _ascii_ext:
+            raise FileNotFoundError(
+                f"找不到文件: {path_or_text}"
+                "（若要直接粘贴文本，请用不含路径分隔符/扩展名的内联文本）"
+            )
     return path_or_text
 
 
@@ -216,6 +220,22 @@ def voice_distance_cmd(
             border_style=color,
         )
     )
+
+    # Per-dimension breakdown (v0.7.0) — show which aspects of the draft
+    # diverge most from the account voice so the creator can fix the right thing.
+    breakdown = voice_distance_breakdown(profile, text)
+    if breakdown:
+        bd_table = Table(
+            show_header=True,
+            header_style="bold cyan",
+            title="声线差异分解 (top 3)",
+        )
+        bd_table.add_column("维度", style="cyan", no_wrap=True)
+        bd_table.add_column("差距", justify="right")
+        bd_table.add_column("占比", justify="right")
+        for label, delta, contrib in breakdown[:3]:
+            bd_table.add_row(label, f"{delta:.2f}", f"{contrib * 100:.0f}%")
+        console.print(bd_table)
 
 
 @app.command()

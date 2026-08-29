@@ -114,7 +114,12 @@ class MockBackend:
         target = 1
         if profile is not None:
             chars = max(1, len(re.sub(r"\s+", "", text)))
-            allowed = round(profile.emoji_per_100_chars / 100.0 * chars)
+            # round-half-up (int(x + 0.5)) instead of Python's banker's rounding
+            # (round-half-to-even): round(0.5) == 0 dropped ALL emoji from a
+            # 10-char region at cadence 5.0, while 11 chars kept one — an
+            # inconsistent boundary in the rewritten 正文. int(x + 0.5) rounds
+            # 0.5 UP to 1 so a half-emoji allowance keeps one, not zero.
+            allowed = int(profile.emoji_per_100_chars / 100.0 * chars + 0.5)
             target = max(0, min(2, allowed))
 
         kept = 0

@@ -4,6 +4,42 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2026-08-29
+
+Bugfix + feature release — two correctness fixes and one in-scope feature,
+further de-risking and enriching the core 去AI味 rewrite + audit UX.
+
+### Fixed
+- `_read_source` now raises `FileNotFoundError` for a missing CJK-named file
+  with an ASCII extension (e.g. `我的笔记.txt`, `小红书笔记.md`) instead of
+  silently treating the filename string as inline text. The v0.3.0 CJK
+  exemption in the path-like guard suppressed the file-not-found check for any
+  input containing CJK, so `voicelock audit 我的笔记.txt` with a missing file
+  silently audited the filename string — the `audit`, `rewrite`, and
+  `voice-distance` commands have no secondary guard, so the filename string was
+  silently processed with no "file not found" signal. The fix checks for an
+  all-ASCII file extension (`.txt`, `.md`, …) and raises even when CJK is
+  present in the stem, while preserving the CJK exemption for inline text with
+  CJK dot-suffixes (`一句话.好的`) and slash-bearing CJK (`他/她 都可以`).
+- `mock._thin_emoji` now uses round-half-up (`int(x + 0.5)`) instead of Python's
+  banker's rounding (`round()`) when computing the per-region emoji keep-target.
+  `round(0.5)` returned 0 (round-half-to-even), so a 10-char rewritten region
+  with `emoji_per_100_chars=5.0` had `target=0` and dropped ALL emoji — while
+  an 11-char region kept one (`round(0.55)=1`). This inconsistent boundary
+  produced unnatural emoji cadence in the rewritten 正文. Round-half-up makes
+  a 0.5 allowance keep one, not zero.
+
+### Added
+- `voice_distance_breakdown` function in `voiceprint.py` and a per-dimension
+  breakdown table in the `voice-distance` CLI command. The breakdown shows the
+  top-3 dimensions where the draft diverges most from the account voice
+  (e.g. emoji density, sentence length, punctuation rhythm), each with its
+  absolute delta and fractional contribution to the total distance. This
+  surfaces the per-dimension comparison data that `voice_distance` already
+  computed but discarded, helping the creator understand WHY their draft is
+  off-voice — directly supporting the 去AI味 goal. The `audit` command's
+  display is unchanged (compact headline score only).
+
 ## [0.6.0] - 2026-08-22
 
 Bugfix release — three correctness fixes folded in from the v0.6.0 amendment,

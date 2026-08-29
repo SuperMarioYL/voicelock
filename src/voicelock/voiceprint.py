@@ -251,6 +251,53 @@ def voice_consistency(profile: VoiceProfile, text: str) -> float:
     return round(1.0 - voice_distance(profile, text), 4)
 
 
+# Per-dimension labels for the voice-distance breakdown (v0.7.0). Each entry
+# corresponds to one element of _signature_vec, in order.
+_DIM_LABELS = [
+    "词汇多样度",    # lexical_diversity
+    "句长 mean",     # sentence_length.mean / 60
+    "句长 std",      # sentence_length.std / 40
+    "emoji 密度",    # emoji_per_100_chars / 12
+    "感叹节奏",      # exclaim_ratio / 1.5
+    "疑问节奏",      # question_ratio / 1.5
+    "波浪节奏",      # wave_ratio / 1.5
+    "省略节奏",      # ellipsis_ratio / 1.5
+]
+
+
+def voice_distance_breakdown(
+    profile: VoiceProfile, text: str
+) -> list[tuple[str, float, float]]:
+    """Return a per-dimension voice-distance breakdown.
+
+    Each tuple is ``(label, delta, contribution)`` where *delta* is the absolute
+    ``|a[i] - b[i]|`` difference and *contribution* is that dimension's fraction
+    of the total squared distance (0..1). The list is sorted by contribution
+    descending so the caller can show the top-N most-off dimensions.
+
+    An empty/whitespace-only draft (or one whose signature is all zeros) returns
+    an empty list — no scorable content, nothing to break down.
+    """
+    draft = build_profile(text, account_id=profile.account_id)
+    a = profile.signature_vec
+    b = draft.signature_vec
+    if not a or not b or not text.strip() or all(v == 0.0 for v in b):
+        return []
+    n = min(len(a), len(b))
+    sq_diffs = [(a[i] - b[i]) ** 2 for i in range(n)]
+    total = sum(sq_diffs)
+    if total == 0:
+        return []
+    result: list[tuple[str, float, float]] = []
+    for i in range(n):
+        label = _DIM_LABELS[i] if i < len(_DIM_LABELS) else f"dim {i}"
+        delta = abs(a[i] - b[i])
+        contribution = sq_diffs[i] / total
+        result.append((label, round(delta, 4), round(contribution, 4)))
+    result.sort(key=lambda x: x[2], reverse=True)
+    return result
+
+
 # --------------------------------------------------------------------------- #
 # Persistence
 # --------------------------------------------------------------------------- #

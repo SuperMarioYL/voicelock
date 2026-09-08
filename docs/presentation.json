@@ -1,0 +1,86 @@
+{
+  "name": "voicelock",
+  "tagline": "Find formulaic text and inspect the rewrite.",
+  "architecture": {
+    "title": "voicelock / data flow",
+    "nodes": [
+      {
+        "title": "Past posts",
+        "detail": "Account corpus"
+      },
+      {
+        "title": "VoiceProfile",
+        "detail": "Vocabulary / sentence / punctuation stats"
+      },
+      {
+        "title": "Detector and rewrite",
+        "detail": "Flag / replace / recheck"
+      },
+      {
+        "title": "Before and after",
+        "detail": "Text and internal scores"
+      }
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ]
+    ]
+  },
+  "process": {
+    "title": "voicelock / example workflow",
+    "steps": [
+      {
+        "title": "Read example posts",
+        "detail": "4 posts / 221 characters"
+      },
+      {
+        "title": "Detect draft phrases",
+        "detail": "Internal score 100"
+      },
+      {
+        "title": "Lexically rewrite",
+        "detail": "Explicit mock backend"
+      },
+      {
+        "title": "Recheck the text",
+        "detail": "Internal score 0"
+      }
+    ],
+    "result": "The example rule score falls from 100 to 0; the rewritten wording still needs human review."
+  },
+  "integrations": {
+    "title": "voicelock / supported routes",
+    "items": [
+      {
+        "title": "Text corpus",
+        "detail": "Blank-line-separated posts"
+      },
+      {
+        "title": "YAML profile",
+        "detail": "Per-account writing statistics"
+      },
+      {
+        "title": "Offline lexical backend",
+        "detail": "Explicit mock mode"
+      },
+      {
+        "title": "Configured model API",
+        "detail": "Optional LLM rewriting"
+      },
+      {
+        "title": "CLI audit / distance",
+        "detail": "Flagged sentences and breakdown"
+      }
+    ]
+  }
+}

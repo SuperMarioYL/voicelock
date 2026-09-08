@@ -1,129 +1,237 @@
 {
-  "schema": 1,
-  "content_version": "v0.7.0",
-  "generated_at": "2026-08-29T12:45:00Z",
+  "schema": 3,
   "name": "voicelock",
   "github": "https://github.com/SuperMarioYL/voicelock",
   "host": "voicelock.lei6393.com",
+  "palette": "auto",
   "lang": {
     "primary": "zh",
     "toggle": true
   },
-  "accent": [
-    "#D9A441",
-    "#5E9B7E",
-    "#B85C3F"
-  ],
+  "meta": {
+    "visual_profile": "neon-particle",
+    "content_version": "0.7.0",
+    "demo_source": "docs/demo-results.json"
+  },
   "hero": {
     "eyebrow": {
-      "zh": "账号声线 · 你拥有的资产 · 离线零 key",
-      "en": "Account voice · Your owned asset · Offline, zero key"
+      "zh": "从历史笔记提取可读的写作特征，标出套路词与标点堆叠，再逐句改写和回检。",
+      "en": "Extract readable writing features from past posts, flag formulaic phrases and punctuation clusters, then rewrite and recheck individual sentences."
     },
     "headline": {
-      "zh": "AI 副驾写的正文一眼就是爆款体\nvoicelock 把它逐句改回你账号的声线",
-      "en": "Your AI copilot's draft screams viral slop\nvoicelock rewrites it sentence by sentence into your voice"
+      "zh": "找到套话，再检查改写后的表达。",
+      "en": "Find formulaic text and inspect the rewrite."
     },
     "sub": {
-      "zh": "从你自己的往期笔记学出账号声线指纹，再逐句检测爆款体区域、在声线内重写、回检达标——退火掉『姐妹们/绝绝子/感叹号轰炸』，改回你本人的表达。",
-      "en": "It learns an account voiceprint from your own past posts, then detects slop regions sentence-by-sentence, rewrites them inside your voice, and rechecks until they pass — boiling off the 姐妹们/绝绝子/exclamation-bomb slop back into how you actually write."
+      "zh": "从历史笔记提取可读的写作特征，标出套路词与标点堆叠，再逐句改写和回检。",
+      "en": "Extract readable writing features from past posts, flag formulaic phrases and punctuation clusters, then rewrite and recheck individual sentences."
     },
-    "command": "voicelock rewrite draft.txt --account main",
+    "href": "#quickstart",
     "cta": {
-      "zh": "查看 GitHub",
-      "en": "View on GitHub"
+      "zh": "运行示例",
+      "en": "Run the example"
     },
     "ctaGithub": {
-      "zh": "Star 项目",
-      "en": "Star the repo"
-    },
-    "scroll": {
-      "zh": "看看怎么去 AI 味",
-      "en": "See how it de-AIs"
+      "zh": "查看源码",
+      "en": "View source"
     }
+  },
+  "scene": {
+    "kind": "neon-graph",
+    "caption": {
+      "zh": "图示展示组件关系；实际输出见下方示例。",
+      "en": "An illustrative component scene; recorded output appears below."
+    },
+    "fallback": "/assets/presentation/scene-dark.svg",
+    "fallbackLight": "/assets/presentation/scene-light.svg"
   },
   "advantages": [
     {
       "title": {
-        "zh": "声线指纹是你拥有的资产",
-        "en": "Your voiceprint is an asset you own"
+        "zh": "档案可读",
+        "en": "Readable profile"
       },
       "body": {
-        "zh": "不是又一次『丢给 AI 一个 prompt 让它学我说话』。voicelock 从你自己的往期笔记算出账号声线指纹，存到你本地，是你拥有的资产——跨帖跨天复用，不是一次性 prompt。",
-        "en": "Not another 'give AI a prompt to mimic me.' voicelock learns your account voiceprint from your own past posts and keeps it locally — an asset you own, reusable post after post, not a one-shot prompt."
-      },
-      "chips": [
-        "› 从你的往期笔记学出",
-        "› 存本地，归你所有",
-        "› 逐维度看差在哪"
-      ]
+        "zh": "句长、词汇与标点以统计量保存。",
+        "en": "Sentence, vocabulary and punctuation features remain readable."
+      }
     },
     {
       "title": {
-        "zh": "一眼标出正文里的爆款体区域",
-        "en": "Flags the slop regions in your draft"
+        "zh": "指出具体句子",
+        "en": "Locate specific sentences"
       },
       "body": {
-        "zh": "针对小红书同质化套路——姐妹们、绝绝子、yyds、感叹号轰炸——逐句标出 slop 区域并给分，告诉你哪几句一眼就是爆款体、要改。",
-        "en": "Built for Xiaohongshu's homogenized formulas — 姐妹们, 绝绝子, yyds, exclamation bombs — it flags the slop regions sentence-by-sentence with a score, showing you exactly which lines scream slop and need rewriting."
-      },
-      "chips": [
-        "› 句级 slop 区域",
-        "› 0–100 slop 分",
-        "› before/after 对比"
-      ]
+        "zh": "规则命中带类型和原因。",
+        "en": "Rule matches include types and reasons."
+      }
     },
     {
       "title": {
-        "zh": "改回你的声线，回检达标才算完",
-        "en": "Rewritten into your voice — rechecked until it passes"
+        "zh": "改写后回检",
+        "en": "Recheck after rewriting"
       },
       "body": {
-        "zh": "对每个爆款体区域跑『重写 → 回检』：在你的账号声线里重写，重写后回检不达标就再来一轮，不是一次改完就交差。",
-        "en": "Each slop region runs a rewrite → recheck loop: rewritten inside your account's voice, and if the recheck doesn't pass, it goes again — not a single-pass handoff."
-      },
-      "chips": [
-        "› 在你的声线内重写",
-        "› 回检不达标再来一轮",
-        "› 逐句 before/after diff"
-      ]
-    },
-    {
-      "title": {
-        "zh": "零 key 离线，从安装到出结果",
-        "en": "Zero-key, offline — from install to result"
-      },
-      "body": {
-        "zh": "默认一个零 API key、不联网的离线后端，从安装到第一条去 AI 味正文全程离线跑通；想要更高质量，带上你自己的模型 key 即可。",
-        "en": "A zero-API-key, offline backend by default — from install to your first de-AI'd draft, the whole chain runs with no key and no network. Want higher quality? Bring your own model key."
-      },
-      "chips": [
-        "› 零 key · 离线",
-        "› 安装即可跑通",
-        "› 高质量自带 key"
-      ]
+        "zh": "候选与原句经过相同检测。",
+        "en": "Candidates and originals use the same detector."
+      }
     }
   ],
-  "scene": {
-    "kind": "mesh"
+  "story": {
+    "intro": {
+      "title": {
+        "zh": "解决什么问题",
+        "en": "The task it solves"
+      },
+      "body": {
+        "zh": "草稿中的夸张开头、重复流行词和密集表情，可能与你平时的表达不同。voicelock 把历史笔记转成统计档案，让你查看具体差异和被标出的句子。这里的“声线”指文本写作特征，不涉及录音或声音克隆。",
+        "en": "Exaggerated openings, repeated trendy phrases and dense emoji can differ from your usual writing. voicelock turns past posts into a statistical profile so you can inspect specific differences and flagged sentences. Voice here means writing features, not recorded speech or voice cloning."
+      }
+    },
+    "sections": [
+      {
+        "title": {
+          "zh": "从输入到结果",
+          "en": "From input to result"
+        },
+        "body": {
+          "zh": "输入为仓库自带的四篇合成笔记与草稿。脚本计算档案、执行离线词法改写并回检。分数衡量当前规则命中，不是人类质量评测、AI 作者概率或平台推荐效果。",
+          "en": "Inputs are the repository’s four synthetic posts and draft. The script builds a profile, performs offline lexical rewrites and rechecks. Scores measure current rule matches, not human-rated quality, AI-authorship probability or platform distribution."
+        },
+        "image": {
+          "light": "/assets/presentation/process-light.svg",
+          "dark": "/assets/presentation/process-dark.svg",
+          "alt": {
+            "zh": "输入为仓库自带的四篇合成笔记与草稿。脚本计算档案、执行离线词法改写并回检。分数衡量当前规则命中，不是人类质量评测、AI 作者概率或平台推荐效果。",
+            "en": "Inputs are the repository’s four synthetic posts and draft. The script builds a profile, performs offline lexical rewrites and rechecks. Scores measure current rule matches, not human-rated quality, AI-authorship probability or platform distribution."
+          }
+        }
+      },
+      {
+        "title": {
+          "zh": "工作原理",
+          "en": "How it works"
+        },
+        "body": {
+          "zh": "voiceprint 用 jieba 与文本统计构建 VoiceProfile；slop_detector 标注句级规则命中；rewriter 调用明确选择的后端，对每句回检并保留分数更低的候选。默认 mock 是词法替换，llm 使用配置的 OpenAI 兼容服务；重新拼接时保留段落间隔。",
+          "en": "voiceprint uses jieba and text statistics to build VoiceProfile. slop_detector identifies sentence-level rule matches, and rewriter calls the selected backend, rechecks each candidate and keeps a lower-scoring version. The mock backend performs lexical substitutions; llm uses a configured OpenAI-compatible service. Reassembly preserves paragraph gaps."
+        },
+        "image": {
+          "light": "/assets/presentation/architecture-light.svg",
+          "dark": "/assets/presentation/architecture-dark.svg",
+          "alt": {
+            "zh": "voiceprint 用 jieba 与文本统计构建 VoiceProfile；slop_detector 标注句级规则命中；rewriter 调用明确选择的后端，对每句回检并保留分数更低的候选。默认 mock 是词法替换，llm 使用配置的 OpenAI 兼容服务；重新拼接时保留段落间隔。",
+            "en": "voiceprint uses jieba and text statistics to build VoiceProfile. slop_detector identifies sentence-level rule matches, and rewriter calls the selected backend, rechecks each candidate and keeps a lower-scoring version. The mock backend performs lexical substitutions; llm uses a configured OpenAI-compatible service. Reassembly preserves paragraph gaps."
+          }
+        }
+      },
+      {
+        "title": {
+          "zh": "能力与接入",
+          "en": "Capabilities and integration"
+        },
+        "body": {
+          "zh": "fingerprint 建档，voice-distance 展示统计一致性与差异最大的维度，audit 只标注，rewrite 输出 before/after。它不登录、抓取或发布笔记；接入 llm 时会把相应文本发送给所配置的服务。",
+          "en": "fingerprint builds a profile; voice-distance shows statistical consistency and leading difference dimensions; audit flags text; rewrite emits before/after. It does not log in, scrape or publish posts. The llm backend sends relevant text to the configured service."
+        },
+        "image": {
+          "light": "/assets/presentation/integrations-light.svg",
+          "dark": "/assets/presentation/integrations-dark.svg",
+          "alt": {
+            "zh": "fingerprint 建档，voice-distance 展示统计一致性与差异最大的维度，audit 只标注，rewrite 输出 before/after。它不登录、抓取或发布笔记；接入 llm 时会把相应文本发送给所配置的服务。",
+            "en": "fingerprint builds a profile; voice-distance shows statistical consistency and leading difference dimensions; audit flags text; rewrite emits before/after. It does not log in, scrape or publish posts. The llm backend sends relevant text to the configured service."
+          }
+        }
+      }
+    ],
+    "details": [
+      {
+        "title": {
+          "zh": "使用方式",
+          "en": "Usage"
+        },
+        "body": {
+          "zh": "fingerprint 建档，voice-distance 展示统计一致性与差异最大的维度，audit 只标注，rewrite 输出 before/after。它不登录、抓取或发布笔记；接入 llm 时会把相应文本发送给所配置的服务。",
+          "en": "fingerprint builds a profile; voice-distance shows statistical consistency and leading difference dimensions; audit flags text; rewrite emits before/after. It does not log in, scrape or publish posts. The llm backend sends relevant text to the configured service."
+        }
+      },
+      {
+        "title": {
+          "zh": "配置",
+          "en": "Configuration"
+        },
+        "body": {
+          "zh": "`VOICELOCK_HOME` 默认 `~/.voicelock`，默认档案为 voice.yaml，多账号为 voice.<account>.yaml。后端优先级为 --backend、VOICELOCK_BACKEND，再按是否存在 VOICELOCK_API_KEY 自动选择。显式 llm 无密钥会报错；VOICELOCK_BASE_URL 与 VOICELOCK_MODEL 指定服务。voice-distance 当前会输出贡献最大的三个差异维度。",
+          "en": "`VOICELOCK_HOME` defaults to `~/.voicelock`; profiles are voice.yaml or voice.<account>.yaml. Backend precedence is --backend, VOICELOCK_BACKEND, then automatic selection based on VOICELOCK_API_KEY. Explicit llm without a key errors; VOICELOCK_BASE_URL and VOICELOCK_MODEL select the service. voice-distance currently displays the top three contributing difference dimensions."
+        }
+      }
+    ]
   },
-  "cta": {
-    "headline": {
-      "zh": "把你的声线变成你拥有的资产",
-      "en": "Turn your voice into an asset you own"
+  "demo": {
+    "title": {
+      "zh": "实际运行结果",
+      "en": "Actual demo output"
     },
-    "sub": {
-      "zh": "开源 · Apache-2.0 · 本地一条命令跑通。",
-      "en": "Open source · Apache-2.0 · runs locally in one command."
+    "note": {
+      "zh": "输入为仓库自带的四篇合成笔记与草稿。脚本计算档案、执行离线词法改写并回检。分数衡量当前规则命中，不是人类质量评测、AI 作者概率或平台推荐效果。",
+      "en": "Inputs are the repository’s four synthetic posts and draft. The script builds a profile, performs offline lexical rewrites and rechecks. Scores measure current rule matches, not human-rated quality, AI-authorship probability or platform distribution."
     },
-    "button": {
-      "zh": "查看 GitHub",
-      "en": "View on GitHub"
+    "source": "https://github.com/SuperMarioYL/voicelock/blob/main/docs/demo-results.json",
+    "steps": [
+      {
+        "label": {
+          "zh": "查看实际改写",
+          "en": "Inspect the actual rewrite"
+        },
+        "body": {
+          "zh": "输出保留原稿、改稿、规则分数与尝试次数；分数降低不保证句子更自然。",
+          "en": "The output retains original and rewritten text, rule scores and attempt counts. Lower scores do not guarantee more natural prose."
+        },
+        "command": ".venv/bin/python examples/presentation-demo.py",
+        "output": "{\n  \"corpus_posts\": 4,\n  \"corpus_chars\": 221,\n  \"backend\": \"mock\",\n  \"before\": \"姐妹们！！！这家咖啡馆真的绝绝子😭😭😭\\n谁懂啊家人们直接封神yyds！！！\\n手把手教你三步找到宝藏咖啡馆，建议收藏码住🔥🔥🔥\\n错过血亏，闭眼入不踩雷～～～\",\n  \"after\": \"这家咖啡馆真的很不错。\\n非常好很顶。\\n三步找到宝藏咖啡馆，建议收藏码住。\\n值得看看，可以放心买不踩雷。\",\n  \"rule_score_before\": 100.0,\n  \"rule_score_after\": 0.0,\n  \"rewrite_attempts\": 5\n}\n",
+        "image": "/assets/presentation/demo-0-light.svg",
+        "imageDark": "/assets/presentation/demo-0-dark.svg"
+      }
+    ]
+  },
+  "quickstart": {
+    "title": {
+      "zh": "从完整输入开始",
+      "en": "Start with complete input"
+    },
+    "body": {
+      "zh": "需要 Python 3.12+ 与 uv。示例强制使用 mock 词法后端，即便机器已配置模型密钥也不会调用服务。",
+      "en": "Requires Python 3.12+ and uv. The example explicitly selects mock lexical rewriting, so an existing model key does not enable service calls."
+    },
+    "steps": [
+      {
+        "title": {
+          "zh": "安装",
+          "en": "Install"
+        },
+        "code": "git clone https://github.com/SuperMarioYL/voicelock.git\ncd voicelock\nuv venv --python 3.12\nuv pip install --python .venv/bin/python -e ."
+      },
+      {
+        "title": {
+          "zh": "运行自带示例",
+          "en": "Run the supplied example"
+        },
+        "code": ".venv/bin/python examples/presentation-demo.py"
+      }
+    ]
+  },
+  "limitations": [
+    {
+      "zh": "规则分数不是“AI 检测器”，不能证明一段文字由人或模型创作。",
+      "en": "The rule score is not an AI detector and cannot establish whether a person or model wrote a text."
+    },
+    {
+      "zh": "未验证任何平台限流、推荐或曝光变化；改写仍需检查事实、含义与个人表达。",
+      "en": "No platform throttling, recommendation or reach effects were validated. Review rewrites for facts, meaning and personal expression."
     }
-  },
+  ],
   "footer": {
-    "tag": {
-      "zh": "给小红书正文做去 AI 味的账号声线改写",
-      "en": "Account-voiceprint de-AI rewriting for Xiaohongshu posts"
-    }
-  }
+    "tag": "0.7.0 · Python 3.12+ · Apache-2.0"
+  },
+  "content_version": "v0.7.0"
 }

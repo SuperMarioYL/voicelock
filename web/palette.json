@@ -1,0 +1,38 @@
+{
+  "mode": "auto",
+  "id": "e6565e-e7a66a-f6accb-4be45c877573",
+  "identity": "https://github.com/supermarioyl/voicelock",
+  "primary": "#e6565e",
+  "secondary": "#e7a66a",
+  "highlight": "#f6accb",
+  "dark": {
+    "bg": "#0a070d",
+    "panel": "#131018",
+    "code": "#140d14",
+    "ink": "#fdeef5",
+    "muted": "#b29ca9",
+    "line": "#3a181f",
+    "primary": "#e6565e",
+    "secondary": "#e7a66a",
+    "highlight": "#f6accb",
+    "accent": "#e6565e",
+    "buttonStart": "#ca4b53",
+    "buttonEnd": "#986e46",
+    "buttonText": "#ffffff"
+  },
+  "light": {
+    "bg": "#fef9f9",
+    "panel": "#fef7f7",
+    "code": "#fdf3f4",
+    "ink": "#27161d",
+    "muted": "#725e6c",
+    "line": "#f7cbce",
+    "primary": "#c0484f",
+    "secondary": "#916843",
+    "highlight": "#906477",
+    "accent": "#c0484f",
+    "buttonStart": "#ca4b53",
+    "buttonEnd": "#986e46",
+    "buttonText": "#ffffff"
+  }
+}

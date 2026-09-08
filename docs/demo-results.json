@@ -1,0 +1,25 @@
+{
+  "version": "0.7.0",
+  "scope": "Statistical profile and explicit offline mock lexical rewrite on shipped synthetic posts and draft. Scores are internal rule values, not human quality, AI-authorship probability or platform-distribution results.",
+  "inputs": [
+    {
+      "path": "examples/presentation-demo.py",
+      "sha256": "0ed0a5b66c33858a1c905567dfd7a80d45da3b45ae694e52b2ef39a48f3fe239"
+    },
+    {
+      "path": "examples/my-posts.txt",
+      "sha256": "70cbfa4d20b15c4fdec3b38d2064aab931f3ecef203e46f1b7da2bcba1fafab4"
+    },
+    {
+      "path": "examples/draft.txt",
+      "sha256": "f1889417ec18b5db6c3e78d6c6c99bb51f86f9496a558e441e670942c85b5698"
+    }
+  ],
+  "steps": [
+    {
+      "command": ".venv/bin/python examples/presentation-demo.py",
+      "output": "{\n  \"corpus_posts\": 4,\n  \"corpus_chars\": 221,\n  \"backend\": \"mock\",\n  \"before\": \"姐妹们！！！这家咖啡馆真的绝绝子😭😭😭\\n谁懂啊家人们直接封神yyds！！！\\n手把手教你三步找到宝藏咖啡馆，建议收藏码住🔥🔥🔥\\n错过血亏，闭眼入不踩雷～～～\",\n  \"after\": \"这家咖啡馆真的很不错。\\n非常好很顶。\\n三步找到宝藏咖啡馆，建议收藏码住。\\n值得看看，可以放心买不踩雷。\",\n  \"rule_score_before\": 100.0,\n  \"rule_score_after\": 0.0,\n  \"rewrite_attempts\": 5\n}\n",
+      "exit_code": 0
+    }
+  ]
+}

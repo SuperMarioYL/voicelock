@@ -4,6 +4,41 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2026-09-08
+
+Release-traceability fix — a single correctness fix that brings every
+secondary version surface back into lockstep with the shipped code and
+restores CHANGELOG contiguity. No behavior change to the 去AI味
+detect/rewrite/voice-distance pipeline.
+
+### Fixed
+- `web/site.json` `content_version` is no longer frozen behind the shipped
+  tag. At the v0.7.0 tag the primary version surfaces (VERSION,
+  `pyproject.toml` `version`, `src/voicelock/__init__.py` `__version__`, and
+  the `voicelock version` CLI output) all read `0.7.0`, but the v0.7.0 tag's
+  `web/site.json` still carried `"content_version": "v0.3.0"` — so the live
+  site (voicelock.lei6393.com) advertised a v0.3.0 content version while the
+  release shipped as v0.7.0. Every `content_version` field in `web/site.json`
+  (the top-level field, the `meta.content_version` field, and the
+  `footer.tag` version prefix) is now bumped to `v0.8.0` in lockstep with
+  every other surface so the site-refresh step's single source of truth tracks
+  the shipped release. A past iteration finding holds: a bump that touches only
+  VERSION re-opens the drift, so ALL surfaces (VERSION, pyproject, `__init__`,
+  CLI var, every `site.json` content_version field) are bumped together every
+  release.
+- `CHANGELOG.md` is now contiguous and fully link-referenced. It listed
+  `## [0.7.0]`, `## [0.6.0]`, then jumped straight to `## [0.4.0]`, omitting a
+  `## [0.5.0]` section even though `v0.5.0` is a real shipped tag
+  (2026-08-18, three correctness fixes); the bottom link-reference list
+  carried `[0.6.0]`, `[0.4.0]`, `[0.3.0]`, `[0.2.0]`, `[0.1.0]` but was missing
+  both `[0.5.0]` and `[0.7.0]`, so those headings rendered as literal
+  bracket-text rather than release links. A `## [0.5.0] - 2026-08-18` section
+  is backfilled between `[0.6.0]` and `[0.4.0]` (documenting the v0.5.0
+  fixes: reject bogus `VOICELOCK_BACKEND` env values, count/keep ZWJ-joined
+  emoji as one cluster, guard a too-small fingerprint corpus), and the missing
+  `[0.5.0]` / `[0.7.0]` link references are restored alongside the new
+  `[0.8.0]` reference.
+
 ## [0.7.0] - 2026-08-29
 
 Bugfix + feature release — two correctness fixes and one in-scope feature,
@@ -81,6 +116,36 @@ all de-risking the core 去AI味 rewrite UX.
   `(FileNotFoundError, ValueError)` to `(OSError, ValueError)`, completing the
   v0.4.0 clean-error path for the entire `OSError` family
   (`FileNotFoundError`, `PermissionError`, `IsADirectoryError`).
+
+## [0.5.0] - 2026-08-18
+
+Bugfix release — three correctness fixes folded in from the v0.5.0 amendment,
+all de-risking the core 去AI味 detect/rewrite/fingerprint pipeline.
+
+### Fixed
+- `resolve_backend` now raises `ValueError` on a bogus non-empty
+  `VOICELOCK_BACKEND` env value (a typo like `moc`, or `qwen` / `foo`) instead
+  of silently flipping to the opposite backend when a key happens to be set.
+  With `VOICELOCK_API_KEY` configured, a typo'd `VOICELOCK_BACKEND=moc` would
+  otherwise resolve to `llm` and make silent network calls against the user's
+  key — the same silent-misconfiguration-of-the-core-rewrite-backend class the
+  v0.3.0 fix made loud for explicit `--backend` values. An empty/unset
+  `VOICELOCK_BACKEND` still falls through to the key-based default, so the
+  default-offline behavior is unchanged.
+- `count_emoji` / `mock._thin_emoji` now treat a ZWJ-joined emoji run (e.g.
+  the family emoji 👨‍👩‍👧‍👦 = man+ZWJ+woman+ZWJ+girl+ZWJ+boy) as ONE logical
+  cluster for both counting and thinning, instead of over-counting it as four
+  codepoints and, in `_thin_emoji` with `target=1`, keeping only the first
+  pictograph plus dangling `U+200D` joiners — which mangled the rewritten 正文
+  with orphaned ZWJ control chars (`👨\u200d\u200d\u200d`). The shared
+  `_EMOJI_CLUSTER` pattern now matches a whole ZWJ-joined run as one unit, so
+  counting and thinning agree and the logical emoji survives intact.
+- The `fingerprint` command now refuses a too-small corpus (`n_posts < 2` or
+  `n_chars < 200`) with a clear "语料太少，声线指纹不可靠" message and exit 1,
+  instead of silently producing a meaningless ~0.99 voice profile (a one-char
+  "好" corpus scored a 爆款体 draft ~0.99). A creator who under-feeds the
+  fingerprint gets a loud refusal here instead of silently-deployed noise into
+  downstream `audit` / `rewrite` / `voice-distance`.
 
 ## [0.4.0] - 2026-08-14
 
@@ -169,7 +234,10 @@ First public release — offline-first CLI, no API key required.
 - Bilingual README (zh-primary + English sibling), animated hero/atlas SVGs,
   and a rendered demo GIF.
 
+[0.8.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.8.0
+[0.7.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.7.0
 [0.6.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.6.0
+[0.5.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.5.0
 [0.4.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.4.0
 [0.3.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.3.0
 [0.2.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.2.0

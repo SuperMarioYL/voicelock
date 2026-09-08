@@ -5,6 +5,6 @@ regions in an AI draft, and regenerate them in your own voice — offline by
 default, no API key required.
 """
 
-__version__ = "0.7.0"
+__version__ = "0.8.0"
 
 __all__ = ["__version__"]

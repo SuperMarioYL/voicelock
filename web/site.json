@@ -104,6 +104,10 @@
           "alt": {
             "zh": "输入为仓库自带的四篇合成笔记与草稿。脚本计算档案、执行离线词法改写并回检。分数衡量当前规则命中，不是人类质量评测、AI 作者概率或平台推荐效果。",
             "en": "Inputs are the repository’s four synthetic posts and draft. The script builds a profile, performs offline lexical rewrites and rechecks. Scores measure current rule matches, not human-rated quality, AI-authorship probability or platform distribution."
+          },
+          "mobile": {
+            "light": "/assets/presentation/process-mobile-light.svg",
+            "dark": "/assets/presentation/process-mobile-dark.svg"
           }
         }
       },
@@ -122,6 +126,10 @@
           "alt": {
             "zh": "voiceprint 用 jieba 与文本统计构建 VoiceProfile；slop_detector 标注句级规则命中；rewriter 调用明确选择的后端，对每句回检并保留分数更低的候选。默认 mock 是词法替换，llm 使用配置的 OpenAI 兼容服务；重新拼接时保留段落间隔。",
             "en": "voiceprint uses jieba and text statistics to build VoiceProfile. slop_detector identifies sentence-level rule matches, and rewriter calls the selected backend, rechecks each candidate and keeps a lower-scoring version. The mock backend performs lexical substitutions; llm uses a configured OpenAI-compatible service. Reassembly preserves paragraph gaps."
+          },
+          "mobile": {
+            "light": "/assets/presentation/architecture-mobile-light.svg",
+            "dark": "/assets/presentation/architecture-mobile-dark.svg"
           }
         }
       },
@@ -140,6 +148,10 @@
           "alt": {
             "zh": "fingerprint 建档，voice-distance 展示统计一致性与差异最大的维度，audit 只标注，rewrite 输出 before/after。它不登录、抓取或发布笔记；接入 llm 时会把相应文本发送给所配置的服务。",
             "en": "fingerprint builds a profile; voice-distance shows statistical consistency and leading difference dimensions; audit flags text; rewrite emits before/after. It does not log in, scrape or publish posts. The llm backend sends relevant text to the configured service."
+          },
+          "mobile": {
+            "light": "/assets/presentation/integrations-mobile-light.svg",
+            "dark": "/assets/presentation/integrations-mobile-dark.svg"
           }
         }
       }

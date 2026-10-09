@@ -176,6 +176,16 @@
           "zh": "`VOICELOCK_HOME` 默认 `~/.voicelock`，默认档案为 voice.yaml，多账号为 voice.<account>.yaml。后端优先级为 --backend、VOICELOCK_BACKEND，再按是否存在 VOICELOCK_API_KEY 自动选择。显式 llm 无密钥会报错；VOICELOCK_BASE_URL 与 VOICELOCK_MODEL 指定服务。voice-distance 当前会输出贡献最大的三个差异维度。",
           "en": "`VOICELOCK_HOME` defaults to `~/.voicelock`; profiles are voice.yaml or voice.<account>.yaml. Backend precedence is --backend, VOICELOCK_BACKEND, then automatic selection based on VOICELOCK_API_KEY. Explicit llm without a key errors; VOICELOCK_BASE_URL and VOICELOCK_MODEL select the service. voice-distance currently displays the top three contributing difference dimensions."
         }
+      },
+      {
+        "title": {
+          "zh": "v0.9.0 更新",
+          "en": "v0.9.0 changes"
+        },
+        "body": {
+          "zh": "修复内联输入判定：Linux 上超过 255 字节的单段内联草稿或语料会让文件探测报 ENAMETOOLONG，fingerprint/audit/rewrite/voice-distance 随之误报“文件名过长”。现在探测失败按“非文件”处理并回退为内联文本，真实文件路径不受影响，路径与内联文本的判定规则本身不变。",
+          "en": "Fixed inline-input handling: on Linux, a pasted draft or corpus over 255 bytes made the file probe raise ENAMETOOLONG, so fingerprint/audit/rewrite/voice-distance errored with “file name too long”. A failing probe is now treated as not-a-file and the text falls back to inline mode; real file paths are unaffected and the path-vs-inline rules are unchanged."
+        }
       }
     ]
   },

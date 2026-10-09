@@ -72,9 +72,25 @@ def _read_source(path_or_text: str) -> str:
     accepted as a corpus, and single-line CJK inline text that merely contains
     a slash or dot-suffix (a date, "他/她", "一句话.好的") is treated as
     inline content, not a missing file.
+
+    The existence probe is best-effort: on Linux, ``Path.is_file()`` on a name
+    whose single component exceeds NAME_MAX (255 bytes) raises
+    ``OSError``/``ENAMETOOLONG`` instead of returning False (pathlib only
+    ignores ENOENT/ENOTDIR/EBADF/ELOOP; macOS raises ENOENT, which IS ignored
+    — which is why the suite passed locally while Linux CI failed). A path
+    that long cannot be a real usable file on any common filesystem, so a
+    failing probe is treated as "not a file" and the input falls through to
+    the inline-text / pathlike analysis below instead of crashing with
+    "File name too long" on a pasted 正文.
     """
     p = Path(path_or_text)
-    if p.is_file():
+    try:
+        is_file = p.is_file()
+    except OSError:
+        # see docstring: Linux ENAMETOOLONG on >255-byte inline text; a real
+        # file path this long cannot exist, so it cannot be read as a file.
+        is_file = False
+    if is_file:
         return p.read_text(encoding="utf-8")
     looks_pathlike = bool(p.suffix) or "/" in path_or_text or "\\" in path_or_text
     if looks_pathlike and "\n" not in path_or_text:

@@ -4,6 +4,28 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] - 2026-10-09
+
+Correctness fix — long inline text works on Linux again, and CI is green for
+the first time since v0.5.0.
+
+### Fixed
+
+- `_read_source`'s file-existence probe is now best-effort: on Linux,
+  `Path.is_file()` on a name whose single component exceeds NAME_MAX (255
+  bytes) raises `OSError`/`ENAMETOOLONG` instead of returning False (pathlib
+  only ignores ENOENT/ENOTDIR/EBADF/ELOOP; macOS raises ENOENT, which IS
+  ignored). Pasting any inline draft/corpus longer than ~85 CJK chars into
+  `fingerprint` / `audit` / `rewrite` / `voice-distance` then crashed with
+  "错误：[Errno 36] File name too long" + exit 1. A failing probe is now
+  treated as "not a file" and the input falls through to the existing
+  inline-text/pathlike analysis — a real file path that long cannot exist on
+  any common filesystem, so no genuine path is mis-read. This was also the
+  root cause of `ci.yml` failing on every push since v0.5.0
+  (`test_v05_fixes.py::test_fingerprint_adequate_corpus_succeeds` and
+  `test_v07_fixes.py::test_voice_distance_cmd_shows_breakdown`). Regression
+  tests in `tests/test_v09_fixes.py`.
+
 ## [0.8.0] - 2026-09-08
 
 Release-traceability fix — a single correctness fix that brings every
@@ -234,6 +256,7 @@ First public release — offline-first CLI, no API key required.
 - Bilingual README (zh-primary + English sibling), animated hero/atlas SVGs,
   and a rendered demo GIF.
 
+[0.9.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.9.0
 [0.8.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.8.0
 [0.7.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.7.0
 [0.6.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.6.0

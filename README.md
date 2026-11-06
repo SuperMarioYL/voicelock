@@ -9,7 +9,7 @@
 
 **从历史笔记提取可读的写作特征，标出套路词与标点堆叠，再逐句改写和回检。**
 
-`v0.7.0` · `Python 3.12+` · [Apache-2.0](LICENSE)
+`v0.10.0` · `Python 3.12+` · [Apache-2.0](LICENSE)
 
 [Website](https://voicelock.lei6393.com) · [Demo record](docs/demo-results.json)
 

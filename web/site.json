@@ -10,7 +10,7 @@
   },
   "meta": {
     "visual_profile": "neon-particle",
-    "content_version": "0.9.0",
+    "content_version": "0.10.0",
     "demo_source": "docs/demo-results.json"
   },
   "hero": {
@@ -179,12 +179,12 @@
       },
       {
         "title": {
-          "zh": "v0.9.0 更新",
-          "en": "v0.9.0 changes"
+          "zh": "v0.10.0 更新",
+          "en": "v0.10.0 changes"
         },
         "body": {
-          "zh": "修复内联输入判定：Linux 上超过 255 字节的单段内联草稿或语料会让文件探测报 ENAMETOOLONG，fingerprint/audit/rewrite/voice-distance 随之误报“文件名过长”。现在探测失败按“非文件”处理并回退为内联文本，真实文件路径不受影响，路径与内联文本的判定规则本身不变。",
-          "en": "Fixed inline-input handling: on Linux, a pasted draft or corpus over 255 bytes made the file probe raise ENAMETOOLONG, so fingerprint/audit/rewrite/voice-distance errored with “file name too long”. A failing probe is now treated as not-a-file and the text falls back to inline mode; real file paths are unaffected and the path-vs-inline rules are unchanged."
+          "zh": "修复输出中的方括号文本：草稿里出现 `[/b]` 这类会被渲染器当成标记的闭合标签时，audit 与 rewrite 不再报错退出，也不再吞掉字面方括号；档案表格里的语料片段同样做了转义。两个 README 的版本行与 Demo 记录的版本字段重新与发布版本一致。未建档时 rewrite 会明确提示本次按默认风格改写，而不是把结果当作按声线条件化的输出。",
+          "en": "Fixed bracket text in output: when a draft contains a closing tag such as `[/b]` that the renderer would treat as markup, audit and rewrite no longer abort and no longer swallow the literal brackets; corpus snippets in the profile table are escaped too. The version line in both READMEs and the demo record’s version field track the release again. Without a stored profile, rewrite now says it is rewriting in the default style instead of presenting the result as voice-conditioned."
         }
       }
     ]
@@ -253,7 +253,7 @@
     }
   ],
   "footer": {
-    "tag": "0.9.0 · Python 3.12+ · Apache-2.0"
+    "tag": "0.10.0 · Python 3.12+ · Apache-2.0"
   },
-  "content_version": "v0.9.0"
+  "content_version": "v0.10.0"
 }

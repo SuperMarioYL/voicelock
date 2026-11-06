@@ -4,6 +4,56 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0] - 2026-11-07
+
+Correctness + release-traceability fix — a pasted draft can no longer crash the
+CLI through bracket text, the version claims a visitor reads first are back in
+lockstep with the shipped tag, and `rewrite` says out loud when it is not using
+a voice fingerprint. No change to the 去AI味 detect/rewrite algorithm itself.
+
+### Fixed
+
+- Creator-supplied text is now escaped before it is rendered through Rich.
+  Every command echoed the draft or corpus text straight into Rich markup
+  strings (`audit` rows at `src/voicelock/cli.py:290`, `rewrite` before/after
+  rows at `cli.py:332-333`, the 改写后正文 `Panel` at `cli.py:344`, and the
+  fingerprint opener/高频词 cells), so a draft containing a Rich-style closing
+  tag raised `rich.markup.MarkupError` inside the renderer — a full Python
+  traceback with exit 1, past the clean-error handler that catches only
+  `OSError`/`ValueError`. Verified on a draft containing `[/b]`: `audit` and
+  `rewrite` both crashed with `MarkupError: closing tag '[/b]' at position 5
+  doesn't match any open tag`. A valid opening tag such as `[bold]` was worse in
+  a quieter way: accepted, but consumed as styling, so the creator's literal
+  brackets disappeared from the audit table and from the 改写后正文 panel. The
+  same escape now also covers the `_clean_user_errors` message, whose text
+  embeds the bad `--corpus`/`--account` value (`voicelock audit '[/b].txt'`
+  crashed *inside* the error handler), and the `声线指纹已保存: …` line, whose
+  path embeds `VOICELOCK_HOME`.
+- The README version chips and the recorded demo's provenance version are back
+  in lockstep. At the v0.9.0 tag `VERSION`, `pyproject.toml`,
+  `__version__` and `voicelock version` all read 0.9.0, but `README.md:12`,
+  `README.en.md:12` and `docs/demo-results.json:2` still read 0.7.0 — the two
+  surfaces a first-time visitor reads first, and the versioned record the quoted
+  demo output is attributed to. The v0.8.0 lockstep fix bumped `web/site.json`
+  but never these three, and the guard it added did not read them, so the drift
+  survived two releases with a green suite. All version surfaces are bumped to
+  0.10.0 together.
+- `rewrite` no longer presents a not-in-your-voice rewrite as voice-conditioned
+  output. Its help text promises "把每个爆款体区域『用你自己的声线』重写", but
+  `_load_profile_or_none` returns `None` silently when no fingerprint is stored,
+  and the backend then runs without any cadence/sentence-length conditioning
+  while the summary simply omits 声线一致性 — exit 0, a 改写后正文 panel, no
+  signal. `rewrite` now prints one yellow notice naming the account and the
+  `fingerprint` command, then continues with the default-style rewrite (audit
+  and rewrite remain usable without a profile; only the silence was the bug).
+
+### Changed
+
+- `tests/test_version_consistency.py` now also asserts the version chip on
+  line 12 of `README.md` and `README.en.md` and the `docs/demo-results.json`
+  `version` field equal `VERSION`, by equality rather than presence, so the next
+  bump that touches only one surface fails there instead of shipping.
+
 ## [0.9.0] - 2026-10-09
 
 Correctness fix — long inline text works on Linux again, and CI is green for
@@ -256,6 +306,7 @@ First public release — offline-first CLI, no API key required.
 - Bilingual README (zh-primary + English sibling), animated hero/atlas SVGs,
   and a rendered demo GIF.
 
+[0.10.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.10.0
 [0.9.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.9.0
 [0.8.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.8.0
 [0.7.0]: https://github.com/SuperMarioYL/voicelock/releases/tag/v0.7.0

@@ -35,6 +35,24 @@ def _strip_v(s: str) -> str:
     return s[1:] if s.startswith("v") else s
 
 
+def _readme_badge_version(path: Path) -> str:
+    """Return the `vX.Y.Z` from the README version chip line.
+
+    Both locales carry one chip line right under the hero:
+        `v0.10.0` · `Python 3.12+` · [Apache-2.0](LICENSE)
+    It is matched anywhere in the file (not by line number) so a small prose edit
+    above the hero cannot silently disable the guard, and it must appear exactly
+    once so two chips in one file cannot disagree.
+    """
+    text = path.read_text(encoding="utf-8")
+    matches = re.findall(r"`v(\d+\.\d+\.\d+)`\s*·\s*`Python 3\.12\+`", text)
+    assert len(matches) == 1, (
+        f"{path.name}: expected exactly one `vX.Y.Z` · `Python 3.12+` chip, "
+        f"found {matches!r}"
+    )
+    return matches[0]
+
+
 def _walk_content_versions(node, found: list[str]) -> None:
     """Recursively collect every `content_version` value in a json tree."""
     if isinstance(node, dict):
@@ -101,6 +119,24 @@ def test_version_surfaces_agree() -> None:
     assert cm, "CHANGELOG.md has no `## [X.Y.Z]` heading"
     changelog_version = cm.group(1)
 
+    # 7. README version chip in BOTH locales — the line under the hero. This is
+    #    the most-read version claim in the repo, and the English sibling is the
+    #    one that historically rots (v0.10.0 found both still at v0.7.0).
+    readme_versions = {
+        name: _readme_badge_version(REPO_ROOT / name)
+        for name in ("README.md", "README.en.md")
+    }
+
+    # 8. docs/demo-results.json `version` — the provenance record the recorded
+    #    demo output is attributed to.
+    demo = json.loads(
+        (REPO_ROOT / "docs" / "demo-results.json").read_text(encoding="utf-8")
+    )
+    demo_version = _strip_v(str(demo.get("version", "")))
+    assert _BARE.match(demo_version), (
+        f"docs/demo-results.json version is not a semver: {demo_version!r}"
+    )
+
     expected = version_file
     assert pyproject_version == expected, (
         f"pyproject.toml {pyproject_version!r} != VERSION {expected!r}"
@@ -120,6 +156,13 @@ def test_version_surfaces_agree() -> None:
     )
     assert changelog_version == expected, (
         f"CHANGELOG top heading {changelog_version!r} != VERSION {expected!r}"
+    )
+    for name, rv in readme_versions.items():
+        assert rv == expected, (
+            f"{name} version chip {rv!r} != VERSION {expected!r}"
+        )
+    assert demo_version == expected, (
+        f"docs/demo-results.json version {demo_version!r} != VERSION {expected!r}"
     )
 
 

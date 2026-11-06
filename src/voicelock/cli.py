@@ -16,6 +16,7 @@ from typing import Optional
 
 import typer
 from rich.console import Console
+from rich.markup import escape
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
@@ -40,6 +41,15 @@ app = typer.Typer(
     no_args_is_help=True,
 )
 console = Console()
+
+# Creator-supplied text (draft sentences, corpus openers / 高频词) is untrusted
+# as *display* input: it is printed through Rich, which parses markup by default.
+# An unpaired closing tag such as "[/b]" raises MarkupError inside the renderer —
+# a raw traceback past _clean_user_errors — and a valid opening tag such as
+# "[bold]" is silently consumed, so the creator's literal brackets vanish from
+# the output. Every creator-derived string is therefore passed through
+# rich.markup.escape before being embedded in a markup string (or handed to a
+# Panel); the intentional surrounding style tags stay intact.
 
 # A real 小红书 draft is zh-CN, so a CJK character anywhere in a path-like
 # input means the user pasted inline text (e.g. a date "2026/07/06 总结" or a
@@ -156,7 +166,10 @@ def _clean_user_errors(fn):
         try:
             return fn(*args, **kwargs)
         except (OSError, ValueError) as exc:
-            console.print(f"[red]错误：{exc}[/red]")
+            # the message can embed creator-supplied text (a bad --corpus path,
+            # an --account value), so escape it: an unescaped bracket tag here
+            # would raise MarkupError *inside* the clean-error handler.
+            console.print(f"[red]错误：{escape(str(exc))}[/red]")
             raise typer.Exit(code=1) from exc
 
     return wrapper
@@ -206,10 +219,12 @@ def fingerprint(
         "标点节奏 ！/？/～",
         f"{profile.exclaim_ratio:.2f} / {profile.question_ratio:.2f} / {profile.wave_ratio:.2f}",
     )
-    table.add_row("开头习惯", "、".join(profile.opener_hooks[:5]) or "—")
-    table.add_row("签名高频词", "、".join(profile.high_freq_tokens[:10]) or "—")
+    table.add_row("开头习惯", "、".join(escape(o) for o in profile.opener_hooks[:5]) or "—")
+    table.add_row(
+        "签名高频词", "、".join(escape(t) for t in profile.high_freq_tokens[:10]) or "—"
+    )
     console.print(table)
-    console.print(f"[green]✓[/green] 声线指纹已保存: [bold]{path}[/bold]")
+    console.print(f"[green]✓[/green] 声线指纹已保存: [bold]{escape(str(path))}[/bold]")
 
 
 @app.command(name="voice-distance")
@@ -287,7 +302,7 @@ def audit(
             str(r.sentence_idx),
             r.slop_type,
             f"{r.score:.0f}",
-            f"[red]{r.text}[/red]\n[dim]{r.reason}[/dim]",
+            f"[red]{escape(r.text)}[/red]\n[dim]{escape(r.reason)}[/dim]",
         )
     console.print(table)
 
@@ -304,6 +319,19 @@ def rewrite(
 ) -> None:
     """把每个爆款体区域『用你自己的声线』重写，打印 before/after diff + slop 分数变化。"""
     profile = _load_profile_or_none(account)
+    if profile is None:
+        # The docstring above promises an in-your-voice rewrite, but with no
+        # stored fingerprint the backend runs without any cadence/sentence-length
+        # conditioning and voice_consistency_after is None — the output is a
+        # generic de-slop. Say so instead of presenting it as voice-conditioned
+        # (voice-distance already refuses this same state). Keep going: the
+        # default-style rewrite is still useful and rewrite is documented to work
+        # without a profile.
+        console.print(
+            f"[yellow]未找到声线指纹（账号 {escape(account)}），本次按默认风格改写，"
+            "未按你的声线条件化。先运行 [bold]voicelock fingerprint --corpus my-posts.txt[/bold] "
+            "即可按你自己的声线改写。[/yellow]"
+        )
     text = _read_source(draft)
     cfg = resolve_backend(backend)
 
@@ -329,8 +357,8 @@ def rewrite(
             table = Table(show_header=False, box=None, pad_edge=False)
             table.add_column(style="dim", no_wrap=True, width=8)
             table.add_column()
-            table.add_row("before", f"[red]{r['before']}[/red]")
-            table.add_row("after", f"[green]{r['after']}[/green]")
+            table.add_row("before", f"[red]{escape(r['before'])}[/red]")
+            table.add_row("after", f"[green]{escape(r['after'])}[/green]")
             table.add_row(
                 "slop",
                 f"{r['region_slop_before']:.0f} → {r['region_slop_after']:.0f}"
@@ -341,7 +369,7 @@ def rewrite(
     else:
         console.print("[green]✓ 未检测到需要重写的爆款体区域。[/green]")
 
-    console.print(Panel(result.after, title="改写后正文 (去AI味)", border_style="green"))
+    console.print(Panel(escape(result.after), title="改写后正文 (去AI味)", border_style="green"))
 
 
 @app.command()
